@@ -72,6 +72,8 @@ const Sidebar = () => {
 
                 <Image
                   src={session.user?.image!}
+                  height={100}
+                  width={100}
                   className='h-5 w-5 rounded-full'
                   alt='PFP'
                   unoptimized

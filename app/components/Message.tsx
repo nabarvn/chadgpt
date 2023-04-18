@@ -13,6 +13,8 @@ const Message = ({ message }: Props) => {
       <div className='flex max-w-2xl mx-auto space-x-5 px-10'>
         <Image
           src={message.user.avatar}
+          height={100}
+          width={100}
           alt='avatar'
           className='h-7 w-7 shrink-0 object-cover pt-1'
           unoptimized

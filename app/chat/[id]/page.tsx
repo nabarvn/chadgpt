@@ -270,6 +270,8 @@ const ChatPage = ({ params: { id } }: Props) => {
                 <div className='shrink-0 object-cover'>
                   <Image
                     src={message.data().user.avatar}
+                    height={100}
+                    width={100}
                     alt='avatar'
                     className='h-7 w-7'
                     unoptimized
