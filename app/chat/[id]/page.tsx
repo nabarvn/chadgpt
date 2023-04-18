@@ -23,6 +23,7 @@ import {
 
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 // import ReactMarkdown from "react-markdown";
 // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -71,7 +72,7 @@ const ChatPage = ({ params: { id } }: Props) => {
     setTimeout(() => {
       setMounted(true);
     }, 1000);
-  }, [messages]);
+  }, [messages, isAtBottom]);
 
   // useSWR to get model
   // const { data: model } = useSWR("model", {
@@ -267,10 +268,12 @@ const ChatPage = ({ params: { id } }: Props) => {
                 } py-5 max-w-2xl mx-auto space-x-5 px-10`}
               >
                 <div className='shrink-0 object-cover'>
-                  <img
+                  <Image
                     src={message.data().user.avatar}
                     alt='avatar'
                     className='h-7 w-7'
+                    unoptimized
+                    priority
                   />
                 </div>
 

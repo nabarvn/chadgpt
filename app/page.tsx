@@ -89,12 +89,12 @@ const HomePage = () => {
           </div>
 
           <div className='space-y-5'>
-            <p className='infoText'>"Who is Satoshi Nakamoto?"</p>
+            <p className='infoText'>&quot;Who is Satoshi Nakamoto?&quot;</p>
             <p className='infoText'>
-              "Explain the significance of NFTs in the digital world"
+              &quot;Explain the significance of NFTs in the digital world&quot;
             </p>
             <p className='infoText'>
-              "What is the difference between DeFi and CeFi?"
+              &quot;What is the difference between DeFi and CeFi?&quot;
             </p>
           </div>
         </div>

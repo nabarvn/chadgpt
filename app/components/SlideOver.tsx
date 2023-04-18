@@ -13,6 +13,7 @@ import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { Disclosure } from "@headlessui/react";
 import ThemeSwitcher from "./ThemeSwitcher";
 import ClearAllChats from "./ClearAllChats";
+import Image from "next/image";
 
 const SlideOver = () => {
   const { data: session } = useSession();
@@ -93,10 +94,12 @@ const SlideOver = () => {
                       <p className='text-gray-300'>Log out</p>
                     </div>
 
-                    <img
+                    <Image
                       src={session.user?.image!}
                       className='h-5 w-5 rounded-full'
                       alt='PFP'
+                      unoptimized
+                      priority
                     />
                   </div>
                 </>

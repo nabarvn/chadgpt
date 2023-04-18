@@ -28,7 +28,7 @@ const ChatBox = ({ chatId }: Props) => {
     }, 1000);
 
     setActive(pathname.includes(chatId));
-  }, [pathname]);
+  }, [pathname, chatId]);
 
   const [messages] = useCollection(
     collection(db, "users", session?.user?.email!, "chats", chatId, "messages")
