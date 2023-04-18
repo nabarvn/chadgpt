@@ -1,91 +1,142 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import { db } from "@/firebase/firebase";
 
-export default function Home() {
+import {
+  BoltIcon,
+  ExclamationTriangleIcon,
+  PlusCircleIcon,
+  SunIcon,
+} from "@heroicons/react/24/outline";
+
+import {
+  addDoc,
+  collection,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useCollection } from "react-firebase-hooks/firestore";
+
+const HomePage = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const [chats] = useCollection(
+    session &&
+      query(
+        collection(db, "users", session.user?.email!, "chats"),
+        orderBy("createdAt", "asc")
+      )
+  );
+
+  const [messages] = useCollection(
+    session && chats?.docs.length
+      ? query(
+          collection(
+            db,
+            "users",
+            session.user?.email!,
+            "chats",
+            chats?.docs[chats.docs.length - 1].id!,
+            "messages"
+          ),
+          orderBy("createdAt", "asc")
+        )
+      : null
+  );
+
+  const createChat = async () => {
+    if (!messages?.empty) {
+      const doc = await addDoc(
+        collection(db, "users", session?.user?.email!, "chats"),
+        {
+          // messages: [],
+          userId: session?.user?.email!,
+          createdAt: serverTimestamp(),
+        }
+      );
+
+      router.push(`/chat/${doc.id}`);
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className='flex flex-col items-center justify-center min-h-screen text-gray-700 dark:text-gray-300 md:px-9'>
+      <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
+        <div className='flex relative items-center text-gray-300 space-x-5 h-full'>
+          <div className='flex inset-y-0 m-auto'>
+            <h2 className='text-base'>Start chatting</h2>
+            <button onClick={createChat} className='absolute right-5'>
+              <PlusCircleIcon className='h-6 w-6' />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
+      <h1 className='text-5xl font-semibold mb-9 md:mb-20 mt-9 md:mt-0'>
+        ChadGPT
+      </h1>
+
+      <div className='flex flex-col md:flex-row md:space-x-5 text-center'>
+        <div className='mb-9 md:mb-0'>
+          <div className='flex flex-row md:flex-col items-center justify-center mb-5 space-x-2 md:space-x-0 md:space-y-2'>
+            <SunIcon className='h-5 w-5 md:h-7 md:w-7' />
+            <h2>Examples</h2>
+          </div>
+
+          <div className='space-y-5'>
+            <p className='infoText'>"Who is Satoshi Nakamoto?"</p>
+            <p className='infoText'>
+              "Explain the significance of NFTs in the digital world"
+            </p>
+            <p className='infoText'>
+              "What is the difference between DeFi and CeFi?"
+            </p>
+          </div>
+        </div>
+
+        <div className='mb-9 md:mb-0'>
+          <div className='flex flex-row md:flex-col items-center justify-center mb-5 space-x-2 md:space-x-0 md:space-y-2'>
+            <BoltIcon className='h-5 w-5 md:h-7 md:w-7' />
+            <h2>Capabilities</h2>
+          </div>
+
+          <div className='space-y-5'>
+            <p className='infoText'>Switch between different ChadGPT models</p>
+            <p className='infoText'>
+              All conversations are stored in Firestore database by Firebase
+            </p>
+            <p className='infoText'>
+              Chad responds using an auto-typing approach
+            </p>
+          </div>
+        </div>
+
+        <div className='mb-9 md:mb-0'>
+          <div className='flex flex-row md:flex-col items-center justify-center mb-5 space-x-2 md:space-x-0 md:space-y-2'>
+            <ExclamationTriangleIcon className='h-5 w-5 md:h-7 md:w-7' />
+            <h2>Limitations</h2>
+          </div>
+
+          <div className='space-y-5'>
+            <p className='infoText'>
+              May ocassionally generate incorrect information
+            </p>
+            <p className='infoText'>
+              Context based chatting might not be possible rn
+            </p>
+            <p className='infoText'>
+              Limited knowledge of world and events after 2021
+            </p>
+          </div>
         </div>
       </div>
+    </div>
+  );
+};
 
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default HomePage;
