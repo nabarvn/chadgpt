@@ -65,7 +65,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen text-gray-700 dark:text-gray-300 md:px-9'>
+    <div className='flex flex-col items-center justify-center min-h-screen md:h-screen text-gray-700 dark:text-gray-300 md:px-9'>
       <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
         <div className='flex relative items-center text-gray-300 space-x-5 h-full'>
           <div className='flex inset-y-0 m-auto'>

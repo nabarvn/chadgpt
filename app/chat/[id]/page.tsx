@@ -332,17 +332,17 @@ const ChatPage = ({ params: { id } }: Props) => {
           <button
             type='submit'
             disabled={!prompt || !session}
-            className={`lg:group bg-[#11A37F] ${
+            className={`bg-[#11A37F] ${
               chadProcessing && "bg-[#11A37F]"
             } active:bg-green-900 text-white ${
               !chadProcessing &&
-              "disabled:bg-gray-300 dark:disabled:bg-gray-900/30 disabled:cursor-not-allowed disabled:hover:opacity-100"
+              "disabled:bg-gray-300 dark:disabled:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
             } font-bold rounded px-3 py-2 h-7`}
           >
             {chadProcessing ? (
               <span ref={loadingRef} className='loading'></span>
             ) : (
-              <PaperAirplaneIcon className='h-3 w-3 -rotate-45 lg:-rotate-0 lg:group-active:-rotate-45 lg:group-hover:-rotate-45 transition duration-300' />
+              <PaperAirplaneIcon className='h-3 w-3 -rotate-45' />
             )}
           </button>
         </form>
