@@ -41,7 +41,8 @@ const SlideOver = () => {
           <div
             className={`flex flex-col md:hidden bg-[#202123] w-[16rem] max-w-[16rem] z-20 fixed top-0 ${
               isOpen ? "left-0" : "-left-96"
-            } lg:left-0 lg:w-[16rem] peer-focus:left-0 peer:transition lg:transition-none ease-out delay-150 duration-200 h-screen space-y-2 overflow-hidden p-2`}
+            } lg:left-0 lg:w-[16rem] peer-focus:left-0 peer:transition lg:transition-none ease-out delay-150 duration-200 space-y-2 overflow-hidden p-2`}
+            style={{ height: "100svh" }}
           >
             <div onClick={() => setIsOpen(false)}>
               <NewChat />

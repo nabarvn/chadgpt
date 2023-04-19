@@ -25,7 +25,10 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className='hidden md:flex flex-col bg-[#202123] w-[16rem] max-w-[16rem] h-screen space-y-2 overflow-hidden p-2'>
+      <div
+        className='hidden md:flex flex-col bg-[#202123] w-[16rem] max-w-[16rem] space-y-2 overflow-hidden p-2'
+        style={{ height: "100svh" }}
+      >
         <NewChat />
 
         {/*ModelSelection*/}

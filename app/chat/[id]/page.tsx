@@ -65,14 +65,14 @@ const ChatPage = ({ params: { id } }: Props) => {
   );
 
   useEffect(() => {
-    if (scrollableRef.current && isAtBottom) {
+    if (scrollableRef.current && chadResponding && isAtBottom) {
       scrollableRef.current.scrollToBottom();
     }
 
     setTimeout(() => {
       setMounted(true);
     }, 1000);
-  }, [messages, isAtBottom]);
+  }, [messages, isAtBottom, chadResponding]);
 
   // useSWR to get model
   // const { data: model } = useSWR("model", {
@@ -102,7 +102,10 @@ const ChatPage = ({ params: { id } }: Props) => {
     }, 21);
   };
 
-  if (chadResponded) {
+  if (
+    chadResponded &&
+    messages?.docs[messages?.docs.length - 1]?.data().user.name === "Chad"
+  ) {
     autoTypingBotResponse(
       messages?.docs[messages?.docs.length - 1]?.data().text.trimStart()
     );
@@ -168,7 +171,7 @@ const ChatPage = ({ params: { id } }: Props) => {
       .then((response) => {
         return response.json();
       })
-      .then((chadMessage) => {
+      .then(() => {
         setChadProcessing(false);
         setChadResponded(true);
         // setChadResponse(chadMessage);
@@ -190,9 +193,9 @@ const ChatPage = ({ params: { id } }: Props) => {
     }
   };
 
-  function updateIsAtBottomState(result: boolean) {
+  const updateIsAtBottomState = (result: boolean) => {
     setIsAtBottom(result);
-  }
+  };
 
   const scrollToBottom = () => {
     scrollableRef.current?.scrollToBottom();
@@ -214,7 +217,7 @@ const ChatPage = ({ params: { id } }: Props) => {
   };
 
   return (
-    <div className='flex flex-col h-screen overflow-hidden'>
+    <div className='flex flex-col overflow-hidden' style={{ height: "100svh" }}>
       <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
         <div className='flex relative items-center text-gray-300 h-full'>
           <div className='w-[16rem] inset-y-0 m-auto'>
@@ -291,7 +294,7 @@ const ChatPage = ({ params: { id } }: Props) => {
           })}
 
           {!isAtBottom && (
-            <div className='absolute bottom-36 right-5 lg:bottom-36 xl:right-36'>
+            <div className='absolute bottom-28 right-5 lg:bottom-36 xl:right-36'>
               <button
                 type='button'
                 onClick={scrollToBottom}
@@ -311,7 +314,7 @@ const ChatPage = ({ params: { id } }: Props) => {
       <div className='bg-gray-300 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 rounded-lg text-sm mx-7 xl:mx-20 my-7 xl:my-10'>
         <form
           onSubmit={sendMessage}
-          className='flex items-center bg-white dark:bg-[#202123] shadow-lg rounded-lg space-x-5 p-3'
+          className='flex items-center bg-white dark:bg-gray-700 shadow-lg rounded-lg space-x-5 p-3'
         >
           <textarea
             name='prompt'
@@ -329,17 +332,17 @@ const ChatPage = ({ params: { id } }: Props) => {
           <button
             type='submit'
             disabled={!prompt || !session}
-            className={`bg-[#11A37F] ${
+            className={`group bg-[#11A37F] ${
               chadProcessing && "bg-[#11A37F]"
             } active:bg-green-900 text-white ${
               !chadProcessing &&
-              "disabled:bg-gray-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed disabled:hover:opacity-100"
+              "disabled:bg-gray-300 dark:disabled:bg-gray-900/30 disabled:cursor-not-allowed disabled:hover:opacity-100"
             } font-bold rounded px-3 py-2 h-7`}
           >
             {chadProcessing ? (
               <span ref={loadingRef} className='loading'></span>
             ) : (
-              <PaperAirplaneIcon className='h-3 w-3 -rotate-45' />
+              <PaperAirplaneIcon className='h-3 w-3 group-active:-rotate-45 group-hover:-rotate-45 transition duration-300' />
             )}
           </button>
         </form>
