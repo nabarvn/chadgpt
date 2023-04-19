@@ -74,8 +74,8 @@ const HomePage = () => {
     <div
       className='flex flex-col items-center justify-center text-gray-700 dark:text-gray-300 md:px-9'
       style={{
-        minHeight: isMobile ? "100vh" : "null",
-        height: isMobile ? "null" : "100svh",
+        minHeight: isMobile ? "100vh" : undefined,
+        height: isMobile ? undefined : "100svh",
       }}
     >
       <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
