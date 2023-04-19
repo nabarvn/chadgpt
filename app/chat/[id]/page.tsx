@@ -332,7 +332,7 @@ const ChatPage = ({ params: { id } }: Props) => {
           <button
             type='submit'
             disabled={!prompt || !session}
-            className={`group bg-[#11A37F] ${
+            className={`lg:group bg-[#11A37F] ${
               chadProcessing && "bg-[#11A37F]"
             } active:bg-green-900 text-white ${
               !chadProcessing &&
@@ -342,7 +342,7 @@ const ChatPage = ({ params: { id } }: Props) => {
             {chadProcessing ? (
               <span ref={loadingRef} className='loading'></span>
             ) : (
-              <PaperAirplaneIcon className='h-3 w-3 group-active:-rotate-45 group-hover:-rotate-45 transition duration-300' />
+              <PaperAirplaneIcon className='h-3 w-3 -rotate-45 lg:-rotate-0 lg:group-active:-rotate-45 lg:group-hover:-rotate-45 transition duration-300' />
             )}
           </button>
         </form>
