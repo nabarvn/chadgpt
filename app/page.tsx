@@ -19,11 +19,17 @@ import {
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 
 const HomePage = () => {
   const { data: session } = useSession();
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 540);
+  }, []);
 
   const [chats] = useCollection(
     session &&
@@ -65,7 +71,13 @@ const HomePage = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen md:h-screen text-gray-700 dark:text-gray-300 md:px-9'>
+    <div
+      className='flex flex-col items-center justify-center text-gray-700 dark:text-gray-300 md:px-9'
+      style={{
+        minHeight: isMobile ? "100vh" : "null",
+        height: isMobile ? "null" : "100svh",
+      }}
+    >
       <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
         <div className='flex relative items-center text-gray-300 space-x-5 h-full'>
           <div className='flex inset-y-0 m-auto'>

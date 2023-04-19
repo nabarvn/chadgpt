@@ -27,7 +27,7 @@ const Sidebar = () => {
     <>
       <div
         className='hidden md:flex flex-col bg-[#202123] w-[16rem] max-w-[16rem] space-y-2 overflow-hidden p-2'
-        style={{ height: "100vh" }}
+        style={{ height: "100svh" }}
       >
         <NewChat />
 
