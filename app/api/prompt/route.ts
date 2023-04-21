@@ -24,7 +24,9 @@ export async function POST(request: Request) {
   }
 
   // ChatGPT Query
-  const response = await query(prompt, id, model);
+  const response = await query(prompt, id, model).catch(
+    (err) => `Server overload. Please try again later! (Error: ${err.message})`
+  );
 
   const message: Message = {
     text: response || "Chad could not find a response",
