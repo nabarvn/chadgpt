@@ -23,37 +23,28 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    // ChatGPT Query
-    const response = await query(prompt, id, model);
+  // ChatGPT Query
+  const response = await query(prompt, id, model);
 
-    const message: Message = {
-      text: response || "Chad could not find a response",
-      createdAt: admin.firestore.Timestamp.now(),
-      user: {
-        _id: "ChadGPT",
-        name: "Chad",
-        avatar: "https://links.papareact.com/89k",
-      },
-    };
+  const message: Message = {
+    text: response || "Chad could not find a response",
+    createdAt: admin.firestore.Timestamp.now(),
+    user: {
+      _id: "ChadGPT",
+      name: "Chad",
+      avatar: "https://links.papareact.com/89k",
+    },
+  };
 
-    await adminDb
-      .collection("users")
-      .doc(session?.user?.email)
-      .collection("chats")
-      .doc(id)
-      .collection("messages")
-      .add(message);
+  await adminDb
+    .collection("users")
+    .doc(session?.user?.email)
+    .collection("chats")
+    .doc(id)
+    .collection("messages")
+    .add(message);
 
-    return new Response(JSON.stringify({ response: message.text }), {
-      status: 200,
-    });
-  } catch (err: any) {
-    return new Response(
-      JSON.stringify({
-        response: `Server overload. Please try again later! (Error: ${err.message})`,
-      }),
-      { status: 504 }
-    );
-  }
+  return new Response(JSON.stringify({ response: message.text }), {
+    status: 200,
+  });
 }
