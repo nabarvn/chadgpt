@@ -2,7 +2,7 @@
   "functions": {
     "api/prompt": {
       "memory": 3008,
-      "maxDuration": 10
+      "maxDuration": 30
     }
   }
 }
