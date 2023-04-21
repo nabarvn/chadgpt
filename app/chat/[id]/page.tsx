@@ -217,10 +217,7 @@ const ChatPage = ({ params: { id } }: Props) => {
   };
 
   return (
-    <div
-      className='flex flex-col overflow-hidden'
-      style={{ height: "100svh", width: "100svw" }}
-    >
+    <div className='flex flex-col overflow-hidden' style={{ height: "100svh" }}>
       <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
         <div className='flex relative items-center text-gray-300 h-full'>
           <div className='w-[16rem] inset-y-0 m-auto'>
@@ -327,7 +324,7 @@ const ChatPage = ({ params: { id } }: Props) => {
             rows={1}
             onChange={(e) => setPrompt(e.target.value)}
             disabled={!session && chadResponding}
-            className='flex-1 bg-transparent break-words focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300 overflow-y-auto resize-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-rounded-lg'
+            className='flex-1 bg-transparent text-base break-words focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300 overflow-y-auto resize-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-rounded-lg'
             placeholder='Send a message...'
             onKeyDown={handleKeyDown}
           />
