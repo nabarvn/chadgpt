@@ -72,7 +72,7 @@ const HomePage = () => {
       <div className='sticky top-0 md:hidden bg-[#343541] w-full'>
         <div className='flex relative items-center text-gray-300 space-x-5 h-11'>
           <div className='flex inset-y-0 m-auto'>
-            <h2 className='text-base'>Let's go!</h2>
+            <h2 className='text-base'>Let&apos;s go!</h2>
             <button onClick={createChat} className='absolute right-5'>
               <PlusCircleIcon className='h-6 w-6' />
             </button>
