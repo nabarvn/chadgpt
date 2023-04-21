@@ -165,6 +165,7 @@ const ChatPage = ({ params: { id } }: Props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify({
         prompt: input,
