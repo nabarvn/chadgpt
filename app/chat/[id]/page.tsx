@@ -53,8 +53,12 @@ const ChatPage = ({ params: { id } }: Props) => {
 
   const messageRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [chadResponding, setChadResponding] = useState(false);
+  const [scrollHeight, setScrollHeight] = useState(
+    scrollRef.current?.scrollHeight
+  );
 
   const [messages, loading] = useCollection(
     session &&
@@ -65,14 +69,14 @@ const ChatPage = ({ params: { id } }: Props) => {
   );
 
   useEffect(() => {
-    if (scrollableRef.current && chadResponding && isAtBottom) {
+    if (scrollableRef.current && isAtBottom) {
       scrollableRef.current.scrollToBottom();
     }
 
     setTimeout(() => {
       setMounted(true);
     }, 1000);
-  }, [messages, isAtBottom, chadResponding]);
+  }, [messages, isAtBottom, scrollHeight]);
 
   // useSWR to get model
   // const { data: model } = useSWR("model", {
@@ -91,6 +95,7 @@ const ChatPage = ({ params: { id } }: Props) => {
         if (index < text.length) {
           if (messageRef.current) {
             messageRef.current.textContent += text.charAt(index);
+            setScrollHeight(scrollRef.current?.scrollHeight);
           }
           index++;
         } else {
@@ -199,6 +204,10 @@ const ChatPage = ({ params: { id } }: Props) => {
 
   const scrollToBottom = () => {
     scrollableRef.current?.scrollToBottom();
+
+    if (chadResponding) {
+      setIsAtBottom(true);
+    }
   };
 
   const createChat = async () => {
@@ -247,7 +256,11 @@ const ChatPage = ({ params: { id } }: Props) => {
           !isAtBottom && "scroll-smooth"
         } scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-[#202123] scrollbar-thumb-rounded-lg`}
       >
-        <div className='overflow-y-auto overflow-x-hidden'>
+        <div
+          id='scrollDiv'
+          ref={scrollRef}
+          className='overflow-y-auto overflow-x-hidden'
+        >
           {messages?.empty && (
             <>
               <p className='text-gray-700 dark:text-gray-300 text-lg md:text-xl text-center mt-10'>
@@ -294,7 +307,7 @@ const ChatPage = ({ params: { id } }: Props) => {
           })}
 
           {!isAtBottom && (
-            <div className='absolute bottom-28 right-5 lg:bottom-36 xl:right-36'>
+            <div className='absolute bottom-32 right-5 lg:bottom-36 xl:right-36'>
               <button
                 type='button'
                 onClick={scrollToBottom}
