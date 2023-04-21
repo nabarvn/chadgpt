@@ -217,7 +217,10 @@ const ChatPage = ({ params: { id } }: Props) => {
   };
 
   return (
-    <div className='flex flex-col overflow-hidden' style={{ height: "100svh" }}>
+    <div
+      className='flex flex-col overflow-hidden'
+      style={{ height: "100svh", width: "100svw" }}
+    >
       <div className='sticky top-0 md:hidden bg-[#343541] h-11 w-full'>
         <div className='flex relative items-center text-gray-300 h-full'>
           <div className='w-[16rem] inset-y-0 m-auto'>
