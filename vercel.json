@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "app/api/prompt/route": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  }
-}
