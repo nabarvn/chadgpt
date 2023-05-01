@@ -5,10 +5,7 @@ import Image from "next/image";
 
 const Login = () => {
   return (
-    <div
-      className='flex flex-col items-center justify-center text-center bg-[#11A37F]'
-      style={{ height: "100svh" }}
-    >
+    <div className='flex flex-col items-center justify-center text-center bg-[#11A37F] min-h-screen'>
       <Image
         unoptimized
         src='https://links.papareact.com/2i6'
