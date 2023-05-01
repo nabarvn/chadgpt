@@ -15,7 +15,7 @@ export const metadata = {
   title: "ChadGPT",
   description: "Generative AI Language Model",
   icons: {
-    icon: "https://links.papareact.com/89k",
+    icon: "./chadgpt.png",
   },
 };
 
