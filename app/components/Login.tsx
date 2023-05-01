@@ -11,7 +11,7 @@ const Login = () => {
     >
       <Image
         unoptimized
-        src='./loginPageLogo.png'
+        src='/loginPageLogo.png'
         width={25}
         height={25}
         alt='ChadGPT Logo'
@@ -34,7 +34,7 @@ const Login = () => {
       >
         <Image
           unoptimized
-          src='./google.png'
+          src='/google.png'
           width={25}
           height={25}
           alt='Google Logo'

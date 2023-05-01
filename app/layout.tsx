@@ -15,7 +15,7 @@ export const metadata = {
   title: "ChadGPT",
   description: "Generative AI Language Model",
   icons: {
-    icon: "./chadgpt.png",
+    icon: "/chadgpt.png",
   },
 };
 
