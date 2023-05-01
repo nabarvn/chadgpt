@@ -23,6 +23,10 @@ const Sidebar = () => {
       )
   );
 
+  const logout = () => {
+    signOut({ callbackUrl: "/" });
+  };
+
   return (
     <>
       <div
@@ -64,10 +68,7 @@ const Sidebar = () => {
                 <ThemeSwitcher />
               </div>
 
-              <div
-                onClick={() => signOut()}
-                className='adminRow !justify-between'
-              >
+              <div onClick={logout} className='adminRow !justify-between'>
                 <div className='flex space-x-2 items-center justify-center'>
                   <ArrowRightOnRectangleIcon className='h-4 w-4 text-gray-500' />
                   <p className='text-gray-300'>Log out</p>
