@@ -15,20 +15,22 @@ const Login = () => {
         width={100}
         height={100}
         alt='ChadGPT Logo'
-        className='h-52 w-72'
+        className='h-96 w-auto lg:h-52 lg:w-72'
         priority
       />
 
       <div className='m-9'>
-        <p className='text-5xl text-gray-700 font-extrabold'>ChadGPT</p>
-        <p className='text-base text-gray-700 font-bold'>
+        <p className='text-9xl lg:text-5xl text-gray-700 font-extrabold'>
+          ChadGPT
+        </p>
+        <p className='text-3xl lg:text-base text-gray-700 font-bold'>
           (This app may or may not be notable)
         </p>
       </div>
 
       <button
         onClick={() => signIn("google", { callbackUrl: "/" })}
-        className='flex space-x-3 bg-white rounded-lg hover:shadow-lg active:bg-gray-300 p-3'
+        className='flex space-x-3 bg-white items-center justify-center rounded-lg hover:shadow-lg active:bg-gray-300 p-7 lg:p-3'
       >
         <Image
           unoptimized
@@ -36,10 +38,10 @@ const Login = () => {
           width={100}
           height={100}
           alt='Google Logo'
-          className='h-9 w-9'
+          className='h-20 w-20 lg:h-9 lg:w-9'
           priority
         />
-        <p className='text-[#757575] text-2xl font-semibold pr-1.5'>
+        <p className='text-[#757575] text-5xl lg:text-2xl font-semibold pr-2 lg:pr-1.5'>
           Sign in with Google
         </p>
       </button>
