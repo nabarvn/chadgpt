@@ -25,7 +25,7 @@ const HomePage = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [chats] = useCollection(
+  const [chats, loading] = useCollection(
     session &&
       query(
         collection(db, "users", session.user?.email!, "chats"),
@@ -73,7 +73,11 @@ const HomePage = () => {
         <div className='flex relative items-center text-gray-300 space-x-5 h-11'>
           <div className='flex inset-y-0 m-auto'>
             <h2 className='text-base'>Let&apos;s go!</h2>
-            <button onClick={createChat} className='absolute right-5'>
+            <button
+              onClick={createChat}
+              className='absolute right-5'
+              disabled={loading}
+            >
               <PlusCircleIcon className='h-6 w-6' />
             </button>
           </div>

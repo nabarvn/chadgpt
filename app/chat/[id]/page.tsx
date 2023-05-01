@@ -25,12 +25,6 @@ import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-// import ReactMarkdown from "react-markdown";
-// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-
-// import remarkGfm from "remark-gfm";
-// import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/hljs";
-
 type Props = {
   params: {
     id: string;
@@ -45,8 +39,6 @@ const ChatPage = ({ params: { id } }: Props) => {
 
   const [chadProcessing, setChadProcessing] = useState(false);
   const [chadResponded, setChadResponded] = useState(false);
-  // const [isCodeSnippet, setIsCodeSnippet] = useState(false);
-  // const [chadResponse, setChadResponse] = useState("");
 
   const scrollableRef = useRef<ScrollableFeed>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -118,17 +110,6 @@ const ChatPage = ({ params: { id } }: Props) => {
     setChadResponded(false);
   }
 
-  // if (chadProcessing) {
-  //   let loadInterval = setInterval(() => {
-  //     if (loadingRef.current) {
-  //       loadingRef.current.textContent += ".";
-
-  //       if (loadingRef.current.textContent === "....")
-  //         loadingRef.current.textContent = "";
-  //     }
-  //   }, 300);
-  // }
-
   const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -180,9 +161,6 @@ const ChatPage = ({ params: { id } }: Props) => {
       .then(() => {
         setChadProcessing(false);
         setChadResponded(true);
-        // setChadResponse(chadMessage);
-
-        // if (chadMessage.response.trim().includes(";")) setIsCodeSnippet(true);
 
         // Toast notification when successful!
         // toast.success("Chad has responded!", {
