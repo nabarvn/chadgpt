@@ -97,4 +97,4 @@ Thanks to *Sonny Sangha* for all of the amazing and knowledge packed content tha
 
 <hr />
 
-<div align="center">Don't forget to leave a STAR ⭐️</div>
+<div align="center">Don't forget to leave a STAR 🌟</div>
