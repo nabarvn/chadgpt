@@ -1,5 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://chad.nabarun.ai">
+    <img src="./public/chadgpt.png" alt="Logo" width="80" height="80">
+  </a>
 
+  <h2 align="center">ChadGPT</h2>
+
+  <p align="center">
+    Your low-key AI agent for the new era!
+    <br />
+    <a href="https://chad.nabarun.ai"><strong>View Project »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/nabarvn/chadgpt/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/nabarvn/chadgpt/issues">Request Feature</a>
+  </p>
+</div>
+
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+<div align="center">
+  <img src="./public/screenshot.png" alt="Screenshot">
+</div>
+
+ChadGPT features a clean and intuitive user interface. Users can interact with the app via a simple chat interface, which is accessible from any device with an internet connection. The app's sleek design and ease of use make it a valuable tool for anyone seeking an intelligent and personalized conversational experience.
+
+
+
+### Built With
+
+* Typescript
+* Next.js
+* Tailwind CSS
+* Cloud Firestore
+* OpenAI API
+* Next Auth
+* SWR
+
+<p>Don't forget to leave a STAR</p>
+
+
+
+<!-- GETTING STARTED -->
 ## Getting Started
 
 First, run the development server:
@@ -22,6 +69,9 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+
+
+<!-- LEARN MORE -->
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -31,8 +81,22 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
+
+
+<!-- DEPLOY -->
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+
+<!-- CREDITS -->
+## Credits
+
+Thanks to *Sonny Sangha* for all of the amazing and knowledge packed content that he puts out on the internet. I hope I was able to do justice to that!
+
+<hr />
+
+<div align="center">Don't forget to leave a STAR ⭐️</div>
