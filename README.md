@@ -42,8 +42,6 @@ ChadGPT features a clean and intuitive user interface. Users can interact with t
 * Next Auth
 * SWR
 
-<p>Don't forget to leave a STAR</p>
-
 
 
 <!-- GETTING STARTED -->
