@@ -11,6 +11,7 @@ import {
 
 import { ArrowDownIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import ScrollableFeed from "../../react-scrollable-feed";
+import TextareaAutosize from "react-textarea-autosize";
 // import useSWR from "swr";
 
 import {
@@ -46,6 +47,7 @@ const ChatPage = ({ params: { id } }: Props) => {
   const messageRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [chadResponding, setChadResponding] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(
@@ -72,10 +74,10 @@ const ChatPage = ({ params: { id } }: Props) => {
 
   // useSWR to get model
   // const { data: model } = useSWR("model", {
-  //   fallbackData: "text-davinci-003",
+  //   fallbackData: "gpt-3.5-turbo",
   // });
 
-  const model = "text-davinci-003";
+  const model = "gpt-3.5-turbo";
 
   const autoTypingBotResponse = (text: string) => {
     let index = 0;
@@ -94,6 +96,10 @@ const ChatPage = ({ params: { id } }: Props) => {
           clearInterval(interval);
 
           setChadResponding(false);
+
+          setTimeout(() => {
+            textareaRef.current?.focus();
+          }, 10);
         }
       }, 9);
     }, 21);
@@ -170,7 +176,7 @@ const ChatPage = ({ params: { id } }: Props) => {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
 
       sendMessage(e as unknown as FormEvent<HTMLFormElement>);
@@ -303,19 +309,21 @@ const ChatPage = ({ params: { id } }: Props) => {
       </ScrollableFeed>
 
       {/* ChatPrompt */}
-      <div className='bg-gray-300 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 rounded-lg text-sm mx-7 xl:mx-20 my-7 xl:my-10'>
+      <div className='bg-gray-300 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 rounded-lg text-sm mx-7 xl:mx-40 my-7 xl:my-10'>
         <form
           onSubmit={sendMessage}
           className='flex items-center bg-white dark:bg-gray-700 shadow-lg rounded-lg space-x-5 p-3'
         >
-          <textarea
+          <TextareaAutosize
+            ref={textareaRef}
             name='prompt'
             autoComplete='off'
             autoFocus
             value={prompt}
             rows={1}
+            maxRows={3}
             onChange={(e) => setPrompt(e.target.value)}
-            disabled={!session && chadResponding}
+            disabled={!session || chadProcessing || chadResponding}
             className='flex-1 bg-transparent text-base break-words focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300 overflow-y-auto resize-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-rounded-lg'
             placeholder='Send a message...'
             onKeyDown={handleKeyDown}
@@ -325,11 +333,12 @@ const ChatPage = ({ params: { id } }: Props) => {
             type='submit'
             disabled={!prompt || !session}
             className={`bg-[#11A37F] ${
-              chadProcessing && "bg-[#11A37F]"
+              chadProcessing &&
+              "bg-[#11A37F] active:bg-[#11A37F] cursor-not-allowed"
             } active:bg-green-900 text-white ${
               !chadProcessing &&
               "disabled:bg-gray-300 dark:disabled:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
-            } font-bold rounded px-3 py-2 h-7`}
+            } self-end font-bold rounded px-3 py-2 h-7`}
           >
             {chadProcessing ? (
               <span ref={loadingRef} className='loading'></span>
