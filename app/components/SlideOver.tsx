@@ -54,7 +54,7 @@ const SlideOver = () => {
 
             {/*ModelSelection*/}
             <div onClick={() => setIsOpen(true)}>
-              <ModelSelect defaultValue='text-davinci-003' />
+              <ModelSelect defaultValue='gpt-3.5-turbo' />
             </div>
 
             <div className='overflow-x-hidden border-b border-gray-700 h-[70%] md:h-[77%] lg:h-[68%] scrollbar-thin scrollbar-thumb-[#434654] scrollbar-thumb-rounded-lg pb-2'>
