@@ -8,6 +8,13 @@ interface Message {
   };
 }
 
+type GPTAgent = "user" | "system";
+
+interface GPTMessage {
+  role: GPTAgent;
+  content: string;
+}
+
 declare module "@openai/api" {
   export const setApiKey: (apiKey: string) => void;
   export const createCompletion: (parameters: any) => Promise<any>;
