@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     user: {
       _id: "ChadGPT",
       name: "Chad",
-      avatar: "https://links.papareact.com/89k",
+      avatar: "/chadgpt.png",
     },
   };
 
