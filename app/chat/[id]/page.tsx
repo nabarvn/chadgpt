@@ -331,13 +331,13 @@ const ChatPage = ({ params: { id } }: Props) => {
 
           <button
             type='submit'
-            disabled={!prompt || !session}
+            disabled={!session || !prompt || chadProcessing}
             className={`bg-[#11A37F] ${
               chadProcessing &&
-              "bg-[#11A37F] active:bg-[#11A37F] cursor-not-allowed"
-            } active:bg-green-900 text-white ${
+              "disabled:bg-[#11A37F] disabled:cursor-not-allowed"
+            } text-white ${
               !chadProcessing &&
-              "disabled:bg-gray-300 dark:disabled:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
+              "active:bg-[#0C6952] disabled:bg-gray-300 dark:disabled:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
             } self-end font-bold rounded px-3 py-2 h-7`}
           >
             {chadProcessing ? (
