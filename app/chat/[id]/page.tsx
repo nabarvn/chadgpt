@@ -281,7 +281,7 @@ const ChatPage = ({ params: { id } }: Props) => {
                 </div>
 
                 <div className='max-w-2xl'>
-                  <p ref={messageRef} className='text-sm whitespace-pre-wrap'>
+                  <p ref={messageRef} className='text-base whitespace-pre-wrap'>
                     {isChad && i === messages?.docs.length - 1 && chadResponding
                       ? null
                       : message.data().text.trimStart()}
@@ -337,7 +337,7 @@ const ChatPage = ({ params: { id } }: Props) => {
               "disabled:bg-[#11A37F] disabled:cursor-not-allowed"
             } text-white ${
               !chadProcessing &&
-              "active:bg-[#0C6952] disabled:bg-gray-300 dark:disabled:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
+              "active:bg-[#0C6952] disabled:bg-gray-300 disabled:active:bg-gray-300 dark:disabled:bg-gray-900/10 dark:disabled:active:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
             } self-end font-bold rounded px-3 py-2 h-7`}
           >
             {chadProcessing ? (
