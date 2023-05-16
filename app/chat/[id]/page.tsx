@@ -292,7 +292,7 @@ const ChatPage = ({ params: { id } }: Props) => {
           })}
 
           {!isAtBottom && (
-            <div className='absolute bottom-32 right-5 lg:bottom-36 xl:right-36'>
+            <div className='absolute bottom-32 right-5 lg:bottom-36 xl:right-24'>
               <button
                 type='button'
                 onClick={scrollToBottom}
