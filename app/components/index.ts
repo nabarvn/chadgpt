@@ -1,5 +1,5 @@
 export { default as Sidebar } from "./Sidebar";
-export { default as Login } from "./Login";
+export { default as SignIn } from "./SignIn";
 export { default as SessionProvider } from "./SessionProvider";
 export { default as NewChat } from "./NewChat";
 export { default as ChatBox } from "./ChatBox";

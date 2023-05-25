@@ -33,7 +33,10 @@ type Props = {
 };
 
 const ChatPage = ({ params: { id } }: Props) => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+    required: true,
+  });
+
   const [prompt, setPrompt] = useState("");
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -148,6 +151,21 @@ const ChatPage = ({ params: { id } }: Props) => {
     //Toast Notification while processing...
     // const notification = toast.loading("Chad is processing...");
 
+    const chatContext = messages?.docs.map((message) => {
+      return {
+        role: message.data().user.name === "Chad" ? "assistant" : "user",
+        content: message.data().text.trim() as string,
+      };
+    }) as GPTMessage[];
+
+    // remember last 10 messages
+    const last10Messages = chatContext?.slice(-10);
+
+    const outboundMessages = [
+      ...(last10Messages as GPTMessage[]),
+      { role: "user", content: input } as GPTMessage,
+    ];
+
     await fetch("/api/prompt", {
       method: "POST",
       headers: {
@@ -156,6 +174,7 @@ const ChatPage = ({ params: { id } }: Props) => {
       },
       body: JSON.stringify({
         prompt: input,
+        outboundMessages,
         id,
         model,
         session,
@@ -270,13 +289,12 @@ const ChatPage = ({ params: { id } }: Props) => {
               >
                 <div className='shrink-0 object-cover'>
                   <Image
+                    unoptimized
                     src={message.data().user.avatar}
                     height={100}
                     width={100}
                     alt='avatar'
                     className='h-7 w-7'
-                    unoptimized
-                    priority
                   />
                 </div>
 

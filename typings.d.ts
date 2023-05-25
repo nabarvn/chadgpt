@@ -8,7 +8,7 @@ interface Message {
   };
 }
 
-type GPTAgent = "user" | "system";
+type GPTAgent = "user" | "system" | "assistant";
 
 interface GPTMessage {
   role: GPTAgent;

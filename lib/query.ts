@@ -1,17 +1,15 @@
 import { instructions } from "@/app/helpers/constants/system-prompt";
 import openai from "./configuration";
 
-export async function query(prompt: string, id: string, model: string) {
-  const outboundMessages: GPTMessage[] = [
-    {
-      role: "system",
-      content: instructions,
-    },
-    {
-      role: "user",
-      content: prompt,
-    },
-  ];
+export async function query(
+  outboundMessages: GPTMessage[],
+  id: string,
+  model: string
+) {
+  outboundMessages.unshift({
+    role: "system",
+    content: instructions,
+  });
 
   const response = await openai
     .createChatCompletion({

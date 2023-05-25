@@ -1,10 +1,10 @@
 import "./globals.scss";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { SignIn } from "./components";
 
 import {
-  Login,
   ModeProvider,
   SessionProvider,
   Sidebar,
@@ -39,7 +39,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
                 </div>
               </div>
             ) : (
-              <Login />
+              <SignIn />
             )}
           </SessionProvider>
         </ModeProvider>
