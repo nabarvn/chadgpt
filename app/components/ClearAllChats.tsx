@@ -31,47 +31,42 @@ const ClearAllChats = () => {
   };
 
   return (
-    <button
-      className={`relative adminRow disabled:hover:bg-[#202123] disabled:cursor-default w-full ${
-        isButtonClicked && "cursor-default !space-x-0"
-      }`}
-      onClick={() => setIsButtonClicked(true)}
-      disabled={isButtonClicked || !chats?.docs.length}
-    >
-      <TrashIcon
-        className={`h-4 w-4 text-gray-500 ${
-          isButtonClicked && "opacity-0"
-        } transition duration-100`}
-      />
-
-      <p
-        className={`${
-          isButtonClicked && "opacity-0"
-        } text-gray-300 transition duration-100`}
+    <>
+      <div
+        className={`adminRow ${
+          !chats?.docs.length && "hover:bg-[#202123] cursor-default"
+        } w-full ${isButtonClicked && "hidden cursor-default !space-x-0"}`}
+        onClick={() => {
+          if (chats?.docs.length) {
+            setIsButtonClicked(true);
+          }
+        }}
       >
-        Clear conversations
-      </p>
+        <TrashIcon className='h-4 w-4 text-gray-500 transition duration-100' />
+
+        <p className='text-gray-300 transition duration-100'>
+          Clear conversations
+        </p>
+      </div>
 
       <div
-        className={`flex items-center justify-between absolute inset-0 ${
+        className={`flex items-center justify-between cursor-default ${
           isButtonClicked ? "block" : "hidden"
-        } bg-gray-700/70 text-gray-300 rounded-lg p-3`}
+        } w-full bg-gray-700/70 text-sm text-gray-300 rounded-lg !mt-0 p-3`}
       >
         <p>You sure?</p>
 
         <div className='flex space-x-2'>
-          <CheckIcon
-            className='h-4 w-4 hover:text-[#202123]'
-            onClick={deleteAllChats}
-          />
+          <button onClick={deleteAllChats}>
+            <CheckIcon className='h-4 w-4 hover:text-[#202123] cursor-default' />
+          </button>
 
-          <XMarkIcon
-            className='h-4 w-4 hover:text-[#202123]'
-            onClick={() => setIsButtonClicked(false)}
-          />
+          <button onClick={() => setIsButtonClicked(false)}>
+            <XMarkIcon className='h-4 w-4 hover:text-[#202123] cursor-default' />
+          </button>
         </div>
       </div>
-    </button>
+    </>
   );
 };
 
