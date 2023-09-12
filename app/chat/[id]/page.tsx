@@ -77,10 +77,10 @@ const ChatPage = ({ params: { id } }: Props) => {
 
   // useSWR to get model
   // const { data: model } = useSWR("model", {
-  //   fallbackData: "gpt-3.5-turbo",
+  //   fallbackData: "gpt-4",
   // });
 
-  const model = "gpt-3.5-turbo";
+  const model = "gpt-4";
 
   const autoTypingBotResponse = (text: string) => {
     let index = 0;
