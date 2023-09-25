@@ -69,7 +69,7 @@ const HomePage = () => {
       className='flex flex-col items-center justify-center text-gray-700 dark:text-gray-300 md:px-9'
       style={{ height: "100svh" }}
     >
-      <div className='sticky top-0 md:hidden bg-[#343541] w-full'>
+      <div className='sticky top-0 md:hidden bg-[#343541] border-b border-[#2C2D36] w-full shadow-sm'>
         <div className='flex relative items-center text-gray-300 space-x-5 h-11'>
           <div className='flex inset-y-0 m-auto'>
             <h2 className='text-base'>Let&apos;s go!</h2>
