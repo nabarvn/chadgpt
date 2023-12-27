@@ -341,15 +341,17 @@ const ChatPage = ({ params: { id } }: Props) => {
             rows={1}
             maxRows={3}
             onChange={(e) => setPrompt(e.target.value)}
-            disabled={!session || chadProcessing || chadResponding}
+            disabled
+            placeholder='Chad will be back soon!'
             className='flex-1 bg-transparent text-base break-words focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300 overflow-y-auto resize-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-rounded-lg'
-            placeholder='Send a message...'
             onKeyDown={handleKeyDown}
+            // disabled={!session || chadProcessing || chadResponding}
+            // placeholder='Send a message...'
           />
 
           <button
             type='submit'
-            disabled={!session || !prompt || chadProcessing}
+            disabled
             className={`bg-[#11A37F] ${
               chadProcessing &&
               "disabled:bg-[#11A37F] disabled:cursor-not-allowed"
@@ -357,6 +359,7 @@ const ChatPage = ({ params: { id } }: Props) => {
               !chadProcessing &&
               "active:bg-[#0C6952] disabled:bg-gray-300 disabled:active:bg-gray-300 dark:disabled:bg-gray-900/10 dark:disabled:active:bg-gray-900/10 disabled:cursor-not-allowed disabled:hover:opacity-100"
             } self-end font-bold rounded px-3 py-2 h-7`}
+            // disabled={!session || !prompt || chadProcessing}
           >
             {chadProcessing ? (
               <span ref={loadingRef} className='loading'></span>
