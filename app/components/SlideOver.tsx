@@ -68,7 +68,7 @@ const SlideOver = () => {
               className='flex items-center gap-2 w-full rounded-lg bg-[#434654] hover:ring-1 hover:ring-gray-300 text-gray-300 text-sm px-3 py-3'
             >
               <ArrowTopRightOnSquareIcon className='h-4 w-4 self-center text-gray-300' />
-              Chat with your PDF documents
+              Chat with your PDF files
             </Link>
 
             <div className='overflow-x-hidden border-b border-gray-700 h-[70%] md:h-[77%] lg:h-[68%] scrollbar-thin scrollbar-thumb-[#434654] scrollbar-thumb-rounded-lg pb-2'>
