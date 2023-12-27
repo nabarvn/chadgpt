@@ -6,11 +6,15 @@ import { collection, orderBy, query } from "firebase/firestore";
 import NewChat from "./NewChat";
 import ChatBox from "./ChatBox";
 import { db } from "@/firebase/firebase";
-import ModelSelect from "./ModelSelect";
-import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightOnRectangleIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import ThemeSwitcher from "./ThemeSwitcher";
 import ClearAllChats from "./ClearAllChats";
 import Image from "next/image";
+import Link from "next/link";
+// import ModelSelect from "./ModelSelect";
 
 const Sidebar = () => {
   const { data: session } = useSession();
@@ -36,9 +40,19 @@ const Sidebar = () => {
         <NewChat />
 
         {/*ModelSelection*/}
-        <div>
+        {/* <div>
           <ModelSelect defaultValue='gpt-3.5-turbo' />
-        </div>
+        </div> */}
+
+        <Link
+          target='_blank'
+          title='Documon'
+          href='https://documon.nabarun.ai'
+          className='flex items-center gap-2 w-full rounded-lg bg-[#434654] hover:ring-1 hover:ring-gray-300 text-gray-300 text-sm px-3 py-3'
+        >
+          <ArrowTopRightOnSquareIcon className='h-4 w-4 self-center text-gray-300' />
+          Chat with your PDF documents
+        </Link>
 
         <div className='overflow-x-hidden border-b border-gray-700 h-[70%] md:h-[77%] lg:h-[68%] scrollbar-thin scrollbar-thumb-[#434654] scrollbar-thumb-rounded-lg pb-2'>
           <div className='space-y-2'>
@@ -76,6 +90,7 @@ const Sidebar = () => {
 
                 <Image
                   src={session.user?.image!}
+                  referrerPolicy='no-referrer'
                   height={100}
                   width={100}
                   className='h-5 w-5 rounded-full'
