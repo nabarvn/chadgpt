@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  images: {
-    domains: ["links.papareact.com"],
-  },
-  experimental: {
-    appDir: true,
+  webpack: (config) => {
+    config.externals = [...config.externals, "encoding"];
+    return config;
   },
 };
 
