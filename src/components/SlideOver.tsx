@@ -13,7 +13,7 @@ import { CreateControl, ExternalLink, ChatList, UserMenu } from "@/components";
 
 const CONSTANTS = {
   LOGOUT_CALLBACK_URL: "/",
-  SIDEBAR_WIDTH: "16rem",
+  SIDEBAR_WIDTH: "18rem",
   ANIMATION_DURATION: "duration-200",
 };
 
@@ -96,13 +96,9 @@ const SlideOver = () => {
 
   const sidebarClasses = useMemo(
     () =>
-      `flex flex-col md:hidden bg-[#202123] w-[${
-        CONSTANTS.SIDEBAR_WIDTH
-      }] max-w-[${CONSTANTS.SIDEBAR_WIDTH}] z-20 fixed top-0 ${
+      `flex flex-col md:hidden bg-[#202123] z-20 fixed top-0 ${
         isOpen ? "left-0" : "-left-96"
-      } lg:left-0 lg:w-[${
-        CONSTANTS.SIDEBAR_WIDTH
-      }] peer-focus:left-0 peer:transition lg:transition-none ease-out delay-150 ${
+      } peer-focus:left-0 peer:transition ease-out delay-150 ${
         CONSTANTS.ANIMATION_DURATION
       } space-y-2 p-2`,
     [isOpen],
@@ -116,20 +112,28 @@ const SlideOver = () => {
     [isOpen],
   );
 
+  const closeButtonLeftPosition = useMemo(() => {
+    const sidebarWidthRem = parseFloat(CONSTANTS.SIDEBAR_WIDTH);
+    return `${sidebarWidthRem + 0.25}rem`;
+  }, []);
+
   return (
     <>
       <Disclosure as="nav">
         <Disclosure.Button
           onClick={handleToggleSidebar}
           onKeyDown={handleKeyDown}
-          className="peer fixed left-1 top-1 z-10 ml-2 block items-center justify-center rounded-md p-1 text-gray-300 transition-colors duration-200 hover:bg-gray-900 hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300 md:hidden"
+          className="peer fixed left-2 top-2.5 z-10 ml-2 block items-center justify-center rounded-md p-1 text-gray-300 transition-colors duration-200 hover:bg-gray-900 hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300 md:hidden"
           aria-label="Open sidebar menu"
           aria-expanded={isOpen}
         >
           <Bars3Icon className="h-7 w-7" aria-hidden="true" />
         </Disclosure.Button>
 
-        <div className={sidebarClasses} style={{ height: "100svh" }}>
+        <div
+          className={sidebarClasses}
+          style={{ height: "100svh", width: CONSTANTS.SIDEBAR_WIDTH }}
+        >
           <header className="space-y-2">
             <CreateControl onClick={handleCloseSidebar} />
             <ExternalLink />
@@ -164,8 +168,9 @@ const SlideOver = () => {
         <button
           onClick={handleCloseSidebar}
           className={`fixed top-1 z-30 block items-center justify-center rounded-md p-1 text-gray-300 ring-2 ring-inset ring-gray-300 transition-all delay-150 duration-200 ease-out md:hidden ${
-            isOpen ? "left-[16.25rem] opacity-100" : "-left-96 opacity-0"
+            isOpen ? "opacity-100" : "opacity-0"
           }`}
+          style={{ left: isOpen ? closeButtonLeftPosition : "-24rem" }}
           aria-label="Close sidebar"
         >
           <XMarkIcon className="h-6 w-6" />
