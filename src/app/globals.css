@@ -1,0 +1,599 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer components {
+  .infoText {
+    @apply max-w-[300px] rounded-lg bg-gray-100 p-4 dark:bg-gray-700/50;
+  }
+
+  .chatRow {
+    @apply flex cursor-pointer items-center justify-start space-x-2 rounded-lg text-sm text-gray-300 transition-all duration-300 ease-out hover:bg-gray-700/70;
+  }
+
+  .adminRow {
+    @apply flex cursor-pointer items-center justify-start space-x-2 rounded-lg px-3 py-3 text-sm text-gray-300 transition-all duration-300 ease-out hover:bg-gray-700/70;
+  }
+}
+
+@layer utilities {
+  .streaming > .prose > :last-child::after,
+  .streaming.prose > :last-child::after {
+    content: "▍";
+    animation: blink 1s step-end infinite;
+    color: var(--tw-prose-body);
+  }
+}
+
+/**
+ * ==============================================
+ * Loading Dots
+ * ==============================================
+ */
+
+@keyframes loading-dots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+  100% {
+    content: "";
+  }
+}
+
+.loading::after {
+  content: "";
+  animation: loading-dots 1s steps(5) infinite;
+}
+
+/**
+ * ==============================================
+ * Dot Spin
+ * ==============================================
+ */
+
+.dot-spin {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: transparent;
+  color: transparent;
+  box-shadow:
+    0 -18px 0 0 #11a37f,
+    12.727926px -12.727926px 0 0 #11a37f,
+    18px 0 0 0 #11a37f,
+    12.727926px 12.727926px 0 0 rgba(152, 128, 255, 0),
+    0 18px 0 0 rgba(152, 128, 255, 0),
+    -12.727926px 12.727926px 0 0 rgba(152, 128, 255, 0),
+    -18px 0 0 0 rgba(152, 128, 255, 0),
+    -12.727926px -12.727926px 0 0 rgba(152, 128, 255, 0);
+  animation: dot-spin 1.5s infinite linear;
+}
+
+@keyframes dot-spin {
+  0%,
+  100% {
+    box-shadow:
+      0 -18px 0 0 #11a37f,
+      12.727926px -12.727926px 0 0 #11a37f,
+      18px 0 0 0 #11a37f,
+      12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      0 18px 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      -18px 0 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0);
+  }
+  12.5% {
+    box-shadow:
+      0 -18px 0 -5px rgba(152, 128, 255, 0),
+      12.727926px -12.727926px 0 0 #11a37f,
+      18px 0 0 0 #11a37f,
+      12.727926px 12.727926px 0 0 #11a37f,
+      0 18px 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      -18px 0 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0);
+  }
+  25% {
+    box-shadow:
+      0 -18px 0 -5px rgba(152, 128, 255, 0),
+      12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0),
+      18px 0 0 0 #11a37f,
+      12.727926px 12.727926px 0 0 #11a37f,
+      0 18px 0 0 #11a37f,
+      -12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      -18px 0 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0);
+  }
+  37.5% {
+    box-shadow:
+      0 -18px 0 -5px rgba(152, 128, 255, 0),
+      12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0),
+      18px 0 0 -5px rgba(152, 128, 255, 0),
+      12.727926px 12.727926px 0 0 #11a37f,
+      0 18px 0 0 #11a37f,
+      -12.727926px 12.727926px 0 0 #11a37f,
+      -18px 0 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 -18px 0 -5px rgba(152, 128, 255, 0),
+      12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0),
+      18px 0 0 -5px rgba(152, 128, 255, 0),
+      12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      0 18px 0 0 #11a37f,
+      -12.727926px 12.727926px 0 0 #11a37f,
+      -18px 0 0 0 #11a37f,
+      -12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0);
+  }
+  62.5% {
+    box-shadow:
+      0 -18px 0 -5px rgba(152, 128, 255, 0),
+      12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0),
+      18px 0 0 -5px rgba(152, 128, 255, 0),
+      12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      0 18px 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px 12.727926px 0 0 #11a37f,
+      -18px 0 0 0 #11a37f,
+      -12.727926px -12.727926px 0 0 #11a37f;
+  }
+  75% {
+    box-shadow:
+      0 -18px 0 0 #11a37f,
+      12.727926px -12.727926px 0 -5px rgba(152, 128, 255, 0),
+      18px 0 0 -5px rgba(152, 128, 255, 0),
+      12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      0 18px 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      -18px 0 0 0 #11a37f,
+      -12.727926px -12.727926px 0 0 #11a37f;
+  }
+  87.5% {
+    box-shadow:
+      0 -18px 0 0 #11a37f,
+      12.727926px -12.727926px 0 0 #11a37f,
+      18px 0 0 -5px rgba(152, 128, 255, 0),
+      12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      0 18px 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px 12.727926px 0 -5px rgba(152, 128, 255, 0),
+      -18px 0 0 -5px rgba(152, 128, 255, 0),
+      -12.727926px -12.727926px 0 0 #11a37f;
+  }
+}
+
+/**
+ * ==============================================
+ * Dot Elastic
+ * ==============================================
+ */
+
+.dot-elastic {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9ca3af;
+  color: #9ca3af;
+  animation: dot-elastic 1s infinite linear;
+}
+
+.dot-elastic::before,
+.dot-elastic::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-elastic::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9ca3af;
+  color: #9ca3af;
+  animation: dot-elastic-before 1s infinite linear;
+}
+
+.dot-elastic::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9ca3af;
+  color: #9ca3af;
+  animation: dot-elastic-after 1s infinite linear;
+}
+
+@keyframes dot-elastic-before {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1.5);
+  }
+  50% {
+    transform: scale(1, 0.67);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes dot-elastic {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1, 1.5);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes dot-elastic-after {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1, 0.67);
+  }
+  75% {
+    transform: scale(1, 1.5);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+.text {
+  position: relative;
+  display: inline-block;
+  font-family: Monaco, Arial, Helvetica, sans-serif;
+  line-height: 24px;
+  font-size: 24px;
+  color: white;
+  min-width: 360px;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -15px;
+    display: inline-block;
+    background-color: #606060;
+    vertical-align: top;
+    width: 10px;
+    height: 24px;
+    animation: blink 1s step-end infinite;
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/**
+ * ==============================================
+ * Syntax Highlighting - Dark Theme
+ * ==============================================
+ */
+
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+}
+
+code.hljs {
+  padding: 3px 5px;
+}
+
+/**
+  Theme: GitHub
+  Description: Light theme as seen on github.com
+  Author: github.com
+*/
+html:not(.dark) .hljs {
+  color: #24292e;
+}
+html:not(.dark) .hljs-doctag,
+html:not(.dark) .hljs-keyword,
+html:not(.dark) .hljs-meta .hljs-keyword,
+html:not(.dark) .hljs-template-tag,
+html:not(.dark) .hljs-template-variable,
+html:not(.dark) .hljs-type,
+html:not(.dark) .hljs-variable.language_ {
+  /* prettylights-syntax-keyword */
+  color: #d73a49;
+}
+html:not(.dark) .hljs-title,
+html:not(.dark) .hljs-title.class_,
+html:not(.dark) .hljs-title.class_.inherited__,
+html:not(.dark) .hljs-title.function_ {
+  /* prettylights-syntax-entity */
+  color: #6f42c1;
+}
+html:not(.dark) .hljs-attr,
+html:not(.dark) .hljs-attribute,
+html:not(.dark) .hljs-literal,
+html:not(.dark) .hljs-meta,
+html:not(.dark) .hljs-number,
+html:not(.dark) .hljs-operator,
+html:not(.dark) .hljs-variable,
+html:not(.dark) .hljs-selector-attr,
+html:not(.dark) .hljs-selector-class,
+html:not(.dark) .hljs-selector-id {
+  /* prettylights-syntax-constant */
+  color: #005cc5;
+}
+html:not(.dark) .hljs-regexp,
+html:not(.dark) .hljs-string,
+html:not(.dark) .hljs-meta .hljs-string {
+  /* prettylights-syntax-string */
+  color: #032f62;
+}
+html:not(.dark) .hljs-built_in,
+html:not(.dark) .hljs-symbol {
+  /* prettylights-syntax-variable */
+  color: #e36209;
+}
+html:not(.dark) .hljs-comment,
+html:not(.dark) .hljs-code,
+html:not(.dark) .hljs-formula {
+  /* prettylights-syntax-comment */
+  color: #6a737d;
+}
+html:not(.dark) .hljs-name,
+html:not(.dark) .hljs-quote,
+html:not(.dark) .hljs-selector-tag,
+html:not(.dark) .hljs-selector-pseudo {
+  /* prettylights-syntax-entity-tag */
+  color: #22863a;
+}
+html:not(.dark) .hljs-subst {
+  /* prettylights-syntax-storage-modifier-import */
+  color: #24292e;
+}
+html:not(.dark) .hljs-section {
+  /* prettylights-syntax-markup-heading */
+  color: #005cc5;
+  font-weight: bold;
+}
+html:not(.dark) .hljs-bullet {
+  /* prettylights-syntax-markup-list */
+  color: #735c0f;
+}
+html:not(.dark) .hljs-emphasis {
+  /* prettylights-syntax-markup-italic */
+  color: #24292e;
+  font-style: italic;
+}
+html:not(.dark) .hljs-strong {
+  /* prettylights-syntax-markup-bold */
+  color: #24292e;
+  font-weight: bold;
+}
+html:not(.dark) .hljs-addition {
+  /* prettylights-syntax-markup-inserted */
+  color: #22863a;
+  background-color: #f0fff4;
+}
+html:not(.dark) .hljs-deletion {
+  /* prettylights-syntax-markup-deleted */
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+
+/**
+  Theme: GitHub Dark
+  Description: Dark theme as seen on github.com
+  Author: github.com
+*/
+html.dark .hljs {
+  color: #c9d1d9;
+}
+html.dark .hljs-doctag,
+html.dark .hljs-keyword,
+html.dark .hljs-meta .hljs-keyword,
+html.dark .hljs-template-tag,
+html.dark .hljs-template-variable,
+html.dark .hljs-type,
+html.dark .hljs-variable.language_ {
+  /* prettylights-syntax-keyword */
+  color: #ff7b72;
+}
+html.dark .hljs-title,
+html.dark .hljs-title.class_,
+html.dark .hljs-title.class_.inherited__,
+html.dark .hljs-title.function_ {
+  /* prettylights-syntax-entity */
+  color: #d2a8ff;
+}
+html.dark .hljs-attr,
+html.dark .hljs-attribute,
+html.dark .hljs-literal,
+html.dark .hljs-meta,
+html.dark .hljs-number,
+html.dark .hljs-operator,
+html.dark .hljs-variable,
+html.dark .hljs-selector-attr,
+html.dark .hljs-selector-class,
+html.dark .hljs-selector-id {
+  /* prettylights-syntax-constant */
+  color: #79c0ff;
+}
+html.dark .hljs-regexp,
+html.dark .hljs-string,
+html.dark .hljs-meta .hljs-string {
+  /* prettylights-syntax-string */
+  color: #a5d6ff;
+}
+html.dark .hljs-built_in,
+html.dark .hljs-symbol {
+  /* prettylights-syntax-variable */
+  color: #ffa657;
+}
+html.dark .hljs-comment,
+html.dark .hljs-code,
+html.dark .hljs-formula {
+  /* prettylights-syntax-comment */
+  color: #8b949e;
+}
+html.dark .hljs-name,
+html.dark .hljs-quote,
+html.dark .hljs-selector-tag,
+html.dark .hljs-selector-pseudo {
+  /* prettylights-syntax-entity-tag */
+  color: #7ee787;
+}
+html.dark .hljs-subst {
+  /* prettylights-syntax-storage-modifier-import */
+  color: #c9d1d9;
+}
+html.dark .hljs-section {
+  /* prettylights-syntax-markup-heading */
+  color: #1f6feb;
+  font-weight: bold;
+}
+html.dark .hljs-bullet {
+  /* prettylights-syntax-markup-list */
+  color: #f2cc60;
+}
+html.dark .hljs-emphasis {
+  /* prettylights-syntax-markup-italic */
+  color: #c9d1d9;
+  font-style: italic;
+}
+html.dark .hljs-strong {
+  /* prettylights-syntax-markup-bold */
+  color: #c9d1d9;
+  font-weight: bold;
+}
+html.dark .hljs-addition {
+  /* prettylights-syntax-markup-inserted */
+  color: #aff5b4;
+  background-color: #033a16;
+}
+html.dark .hljs-deletion {
+  /* prettylights-syntax-markup-deleted */
+  color: #ffdcd7;
+  background-color: #67060c;
+}
+
+/**
+ * ==============================================
+ * Code Block Scrollbar Styling
+ * ==============================================
+ */
+
+/* Custom scrollbar for code blocks */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  @apply rounded-md bg-gray-300 dark:bg-gray-600;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Firefox */
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: theme("colors.gray.300") transparent;
+}
+
+.dark .overflow-x-auto {
+  scrollbar-color: theme("colors.gray.600") transparent;
+}
+
+/* Mobile: Hide scrollbars but keep functionality */
+@media (max-width: 640px) {
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .overflow-x-auto {
+    scrollbar-width: thin;
+  }
+}
+
+/**
+ * ==============================================
+ * Code Block Enhancements
+ * ==============================================
+ */
+
+.prose pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.prose code {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .prose h1 {
+    font-size: 1.5rem;
+  }
+
+  .prose h2 {
+    font-size: 1.25rem;
+  }
+
+  .prose h3 {
+    font-size: 1.125rem;
+  }
+}
+
+/* Code block container fixes */
+.not-prose {
+  max-width: 100%;
+  overflow: hidden;
+}
