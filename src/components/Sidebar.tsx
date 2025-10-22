@@ -83,7 +83,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="hidden w-[16rem] max-w-[16rem] flex-col space-y-2 overflow-hidden bg-[#202123] p-2 md:flex"
+      className="hidden w-[18rem] flex-col space-y-2 overflow-hidden bg-[#202123] p-2 md:flex"
       style={{ height: "100svh" }}
       role="navigation"
       aria-label="Sidebar navigation"
