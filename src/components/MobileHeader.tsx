@@ -7,7 +7,7 @@ interface MobileHeaderProps {
 
 const MobileHeader = ({ onCreateChat, isDisabled }: MobileHeaderProps) => (
   <div className="sticky top-0 w-full border-b border-[#2C2D36] bg-[#343541] shadow-sm md:hidden">
-    <div className="relative flex h-11 items-center space-x-5 text-gray-300">
+    <div className="relative flex h-14 items-center space-x-5 text-gray-300">
       <div className="inset-y-0 m-auto flex">
         <h2 className="text-base">Let&apos;s go!</h2>
 
