@@ -16,9 +16,9 @@ const ChatHeader = ({
   isPending,
   onCreateChat,
 }: ChatHeaderProps) => (
-  <div className="sticky top-0 h-11 w-full border-b border-[#2C2D36] bg-[#343541] shadow-sm md:hidden">
+  <div className="sticky top-0 h-14 w-full border-b border-[#2C2D36] bg-[#343541] shadow-sm md:hidden">
     <div className="relative flex h-full items-center text-gray-300">
-      <div className="inset-y-0 m-auto w-[16rem]">
+      <div className="inset-y-0 m-auto w-[16.50rem] pl-2">
         <p className="relative truncate text-center text-base">
           {isInitialized &&
             (displayMessages[displayMessages.length - 1]?.text || "New Chat")}
