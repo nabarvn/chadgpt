@@ -94,7 +94,10 @@ const Gateway = () => {
   }, [isDisabled]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white">
+    <div
+      className="flex flex-col items-center justify-center bg-white"
+      style={{ height: "100svh" }}
+    >
       <div className="flex flex-col items-center justify-center text-center">
         <Image
           priority
