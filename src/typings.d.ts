@@ -32,13 +32,13 @@ export interface GPTMessage {
 export interface ChatSession {
   id: string;
   createdAt: Timestamp | string;
+  title?: string | null;
   messages?: Message[];
 }
 
 export interface ChatState {
   isInitialized: boolean;
   isCreating: boolean;
-  initialPromptSent: boolean;
   optimisticMessage: MessageType | null;
   isSendingMessage: boolean;
   streamingMessage: MessageType | null;
