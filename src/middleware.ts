@@ -3,7 +3,19 @@ import { rateLimiter } from "@/lib/rate-limiter";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  if (req.nextUrl.pathname.startsWith("/api")) {
+  const { pathname, searchParams } = req.nextUrl;
+
+  if (
+    pathname === "/" &&
+    (searchParams.has("error") || searchParams.has("callbackUrl"))
+  ) {
+    const url = req.nextUrl.clone();
+    url.searchParams.delete("error");
+    url.searchParams.delete("callbackUrl");
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname.startsWith("/api")) {
     const token = await getToken({ req });
 
     const ip =
@@ -29,5 +41,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/:path*"],
+  matcher: ["/", "/api/:path*"],
 };
