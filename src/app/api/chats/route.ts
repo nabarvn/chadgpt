@@ -22,6 +22,7 @@ interface ApiResponse {
 
 interface ChatDocument {
   userId: string;
+  title: null;
   createdAt: ReturnType<typeof serverTimestamp>;
 }
 
@@ -87,6 +88,7 @@ export async function POST(
 
     const newChatData: ChatDocument = {
       userId: userEmail,
+      title: null,
       createdAt: serverTimestamp(),
     };
 
