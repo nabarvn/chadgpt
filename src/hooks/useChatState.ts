@@ -10,7 +10,6 @@ export function useChatState(
   const [state, setState] = useState<ChatState>({
     isInitialized: false,
     isCreating: false,
-    initialPromptSent: false,
     optimisticMessage: null,
     isSendingMessage: false,
     streamingMessage: null,
