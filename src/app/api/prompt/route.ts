@@ -1,11 +1,16 @@
-import openai from "@/lib/openai";
 import { Message } from "@/typings";
+import { encodeEvent } from "@/lib/sse";
 import { adminDb } from "@/firebase/server";
+import { getAuthSession } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getSystemPrompt } from "@/config/system-prompt";
-import { OpenAIStream, StreamingTextResponse } from "ai";
+import openai, { classifyOpenAIError } from "@/lib/openai";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
+
+const MODEL = "gpt-6-luna";
+const REQUEST_TIMEOUT = 300_000;
+const PROMPT_ERROR_MESSAGE = "Failed to process chat request.";
 
 interface ChatRequest {
   outboundMessages: Array<{
@@ -13,12 +18,7 @@ interface ChatRequest {
     content: string;
   }>;
   id: string;
-  model: string;
-  session: {
-    user: {
-      email: string;
-    };
-  };
+  turnId: string;
   timezone?: string;
 }
 
@@ -35,8 +35,9 @@ function validateChatRequest(body: unknown): body is ChatRequest {
     typeof req === "object" &&
     Array.isArray(req.outboundMessages) &&
     typeof req.id === "string" &&
-    typeof req.model === "string" &&
-    typeof req.session?.user?.email === "string"
+    typeof req.turnId === "string" &&
+    /^[a-zA-Z0-9_-]{1,128}$/.test(req.turnId) &&
+    req.outboundMessages.at(-1)?.role === "user"
   );
 }
 
@@ -59,24 +60,33 @@ async function verifyChatOwnership(
   }
 }
 
-async function saveMessage(
-  message: Message,
+async function saveTurn(
+  userMessage: Message,
+  assistantMessage: Message,
   chatId: string,
   userEmail: string,
+  turnId: string,
 ): Promise<void> {
   try {
-    await adminDb
+    const messagesRef = adminDb
       .collection("users")
       .doc(userEmail)
       .collection("chats")
       .doc(chatId)
-      .collection("messages")
-      .add(message);
+      .collection("messages");
+
+    const batch = adminDb.batch();
+
+    batch.set(messagesRef.doc(`${turnId}-user`), userMessage);
+    batch.set(messagesRef.doc(`${turnId}-assistant`), assistantMessage);
+
+    await batch.commit();
   } catch (error) {
-    console.error("Error saving message to Firestore:", {
+    console.error("Error saving chat turn to Firestore:", {
       error: error instanceof Error ? error.message : "Unknown error",
       chatId,
       userEmail,
+      turnId,
       timestamp: new Date().toISOString(),
     });
 
@@ -93,14 +103,16 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error:
-            "Invalid request body. Missing required fields: outboundMessages, id, model, or session.",
+            "Invalid request body. Missing required fields: outboundMessages, id, or turnId.",
         },
         { status: 400 },
       );
     }
 
-    const { outboundMessages, id: chatId, model, session, timezone } = body;
+    const { outboundMessages, id: chatId, turnId, timezone } = body;
     const { geo } = request;
+
+    const session = await getAuthSession();
 
     if (!session?.user?.email) {
       return NextResponse.json<ApiErrorResponse>(
@@ -120,98 +132,151 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const messages = [
+    const response = await openai.chat.completions.create(
       {
-        role: "system" as const,
-        content: getSystemPrompt({ geo, timezone }),
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content: getSystemPrompt({ geo, timezone }),
+          },
+          ...outboundMessages,
+        ],
+        reasoning_effort: "medium",
+        max_completion_tokens: 1000,
+        stream: true,
       },
-      ...outboundMessages,
-    ];
+      { timeout: REQUEST_TIMEOUT, signal: request.signal },
+    );
 
-    // create OpenAI streaming request
-    const response = await openai.chat.completions.create({
-      model,
-      user: chatId,
-      messages,
-      temperature: 0.7,
-      top_p: 1,
-      max_tokens: 1000,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-      stream: true,
-      n: 1,
-    });
-
-    /* 
-      Create custom ReadableStream 
-      to handle OpenAI streaming response
-    */
     const encoder = new TextEncoder();
 
-    const customReadable = new ReadableStream({
+    let completion = "";
+    let cancelled = false;
+
+    const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
           for await (const chunk of response) {
-            // transform chunk into Server-Sent Events format
-            const sseData = `data: ${JSON.stringify(chunk)}\n\n`;
-            controller.enqueue(encoder.encode(sseData));
+            const text = chunk.choices[0]?.delta?.content;
+
+            if (text) {
+              completion += text;
+
+              controller.enqueue(
+                encoder.encode(encodeEvent({ type: "delta", text })),
+              );
+            }
           }
 
-          // signal completion
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-        } catch (error) {
-          console.error("Error while streaming OpenAI response:", {
-            error:
-              error instanceof Error
-                ? error.message
-                : "Unknown streaming error",
+          if (!completion) {
+            throw new Error("OpenAI returned an empty response");
+          }
+
+          if (cancelled || request.signal.aborted) {
+            return;
+          }
+
+          const now = Date.now();
+
+          const userMessage: Message = {
+            text: outboundMessages[outboundMessages.length - 1].content.trim(),
+            createdAt: new Date(now),
+            user: {
+              _id: userEmail,
+              name: session.user?.name || "User",
+              avatar:
+                session.user?.image ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  session.user?.name || "User",
+                )}`,
+            },
+          };
+
+          const assistantMessage: Message = {
+            text: completion,
+            createdAt: new Date(now + 1),
+            user: {
+              _id: "chadgpt",
+              name: "Chad",
+              avatar: "/chad.png",
+            },
+          };
+
+          await saveTurn(
+            userMessage,
+            assistantMessage,
             chatId,
             userEmail,
-            timestamp: new Date().toISOString(),
-          });
+            turnId,
+          );
 
-          controller.error(error);
-        } finally {
+          controller.enqueue(encoder.encode(encodeEvent({ type: "done" })));
           controller.close();
+        } catch (error) {
+          const wasAborted =
+            cancelled ||
+            request.signal.aborted ||
+            (error instanceof Error && error.name === "AbortError");
+
+          if (!wasAborted) {
+            const classification = classifyOpenAIError(error);
+
+            console.error("Error while streaming OpenAI response:", {
+              error,
+              chatId,
+              userEmail,
+              timestamp: new Date().toISOString(),
+            });
+
+            controller.enqueue(
+              encoder.encode(
+                encodeEvent({
+                  type: "error",
+                  error: classification?.message || PROMPT_ERROR_MESSAGE,
+                }),
+              ),
+            );
+
+            controller.close();
+          }
         }
       },
-    });
-
-    const stream = OpenAIStream(new Response(customReadable), {
-      async onCompletion(completion) {
-        const message: Message = {
-          text: completion,
-          createdAt: new Date(),
-          user: {
-            _id: "chadgpt",
-            name: "Chad",
-            avatar: "/chad.png",
-          },
-        };
-
-        await saveMessage(message, chatId, userEmail);
+      cancel() {
+        cancelled = true;
+        response.controller.abort();
       },
     });
 
-    return new StreamingTextResponse(stream, {
+    return new Response(stream, {
       headers: {
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "text/event-stream; charset=utf-8",
         "Cache-Control": "no-cache, no-store, must-revalidate",
+        Connection: "keep-alive",
       },
     });
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+    if (
+      request.signal.aborted ||
+      (error instanceof Error && error.name === "AbortError")
+    ) {
+      return new Response(null, { status: 499 });
+    }
+
+    const classification = classifyOpenAIError(error);
 
     console.error("Error in OpenAI chat endpoint:", {
-      error: errorMessage,
+      error,
       timestamp: new Date().toISOString(),
     });
 
     return NextResponse.json<ApiErrorResponse>(
-      { success: false, error: "Failed to process chat request." },
       {
-        status: 500,
+        success: false,
+        error: classification?.message || PROMPT_ERROR_MESSAGE,
+      },
+      {
+        status: classification?.status || 500,
         headers: {
           "Content-Type": "application/json",
         },
