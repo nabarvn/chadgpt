@@ -1,5 +1,5 @@
 import { Session } from "next-auth";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { validateAndTransformSession } from "@/lib/utils";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { HistoryControl, ThemeSwitcher, UserAvatar } from "@/components";
@@ -9,24 +9,16 @@ const UserMenu = memo(
     session,
     onLogout,
     onMenuAction,
+    isLoggingOut = false,
   }: {
     session: Session | null;
     onLogout: () => void;
     onMenuAction?: () => void;
+    isLoggingOut?: boolean;
   }) => {
     const { userImage, userName } = useMemo(
       () => validateAndTransformSession(session),
       [session],
-    );
-
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onLogout();
-        }
-      },
-      [onLogout],
     );
 
     return (
@@ -39,12 +31,11 @@ const UserMenu = memo(
           </div>
         </div>
 
-        <div
+        <button
+          type="button"
           onClick={onLogout}
-          onKeyDown={handleKeyDown}
-          className="adminRow cursor-pointer !justify-between"
-          role="button"
-          tabIndex={0}
+          disabled={isLoggingOut}
+          className="adminRow w-full !justify-between disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
           aria-label="Log out"
         >
           <div className="flex items-center justify-center space-x-2">
@@ -57,7 +48,7 @@ const UserMenu = memo(
           </div>
 
           <UserAvatar userImage={userImage} userName={userName} />
-        </div>
+        </button>
       </>
     );
   },
