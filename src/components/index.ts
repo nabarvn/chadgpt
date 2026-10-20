@@ -5,7 +5,6 @@ export { default as ChatInput } from "./ChatInput";
 export { default as ChatEntry } from "./ChatEntry";
 export { default as Lobby } from "./Lobby";
 export { default as Message } from "./Message";
-export { default as ModelSelect } from "./ModelSelect";
 export { default as CreateControl } from "./CreateControl";
 export { default as Providers } from "./Providers";
 export { default as ThemeSwitcher } from "./ThemeSwitcher";
