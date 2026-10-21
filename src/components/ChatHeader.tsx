@@ -1,8 +1,7 @@
-import { Message } from "@/typings";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 
 interface ChatHeaderProps {
-  displayMessages: Message[];
+  title?: string | null;
   isInitialized: boolean;
   isCreating: boolean;
   isPending: boolean;
@@ -10,7 +9,7 @@ interface ChatHeaderProps {
 }
 
 const ChatHeader = ({
-  displayMessages,
+  title,
   isInitialized,
   isCreating,
   isPending,
@@ -20,9 +19,7 @@ const ChatHeader = ({
     <div className="relative flex h-full items-center text-gray-300">
       <div className="inset-y-0 m-auto w-[16.50rem] pl-2">
         <p className="relative truncate text-center text-base">
-          {isInitialized &&
-            (displayMessages[displayMessages.length - 1]?.text || "New Chat")}
-
+          {isInitialized && (title || "New Chat")}
           <span className="absolute inset-y-0 right-0 z-10 h-7 w-9 bg-gradient-to-l from-[#343541] opacity-90" />
         </p>
       </div>
