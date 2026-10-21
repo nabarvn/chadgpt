@@ -64,18 +64,15 @@ const SlideOver = () => {
 
     setIsLoggingOut(true);
 
-    const logoutPromise = handleUserLogout()
-      .catch((error) => {
-        console.error("SlideOver: Logout failed:", {
-          error: error instanceof Error ? error.message : "Unknown error",
-          timestamp: new Date().toISOString(),
-        });
-
-        throw error;
-      })
-      .finally(() => {
-        setIsLoggingOut(false);
+    const logoutPromise = handleUserLogout().catch((error) => {
+      console.error("SlideOver: Logout failed:", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString(),
       });
+
+      setIsLoggingOut(false);
+      throw error;
+    });
 
     toast.promise(logoutPromise, {
       loading: "Signing out...",
@@ -159,6 +156,7 @@ const SlideOver = () => {
                   session={session}
                   onLogout={handleLogout}
                   onMenuAction={handleMenuAction}
+                  isLoggingOut={isLoggingOut}
                 />
               )
             )}
