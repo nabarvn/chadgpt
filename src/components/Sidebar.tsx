@@ -64,7 +64,11 @@ const Sidebar = () => {
             <UserMenuSkeleton />
           ) : (
             isValidSession && (
-              <UserMenu session={session} onLogout={handleLogout} />
+              <UserMenu
+                session={session}
+                onLogout={handleLogout}
+                isLoggingOut={isLoggingOut}
+              />
             )
           )}
         </div>
@@ -78,6 +82,7 @@ const Sidebar = () => {
       isValidSession,
       session,
       handleLogout,
+      isLoggingOut,
     ],
   );
 
