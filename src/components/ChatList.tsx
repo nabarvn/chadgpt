@@ -55,7 +55,7 @@ const ChatList = memo(
       <div className="space-y-2" role="list" aria-label="Chat history">
         {validChats.map((chat: FirebaseDoc<ChatSession>) => (
           <div key={chat.id} role="listitem" onClick={onChatClick}>
-            <ChatEntry chatId={chat.id} />
+            <ChatEntry chatId={chat.id} title={chat.data().title} />
           </div>
         ))}
       </div>
