@@ -3,30 +3,21 @@
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Session } from "next-auth";
-import { db } from "@/firebase/client";
+import { useChatTitle } from "@/hooks";
 import { deleteChat } from "@/lib/chat";
 import { isMobile } from "react-device-detect";
 import { usePathname, useRouter } from "next/navigation";
-import { useCollection } from "react-firebase-hooks/firestore";
 import { useState, useCallback, useMemo, useRef } from "react";
 import { useSession, SessionContextValue } from "next-auth/react";
 import { ChatBubbleLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-import {
-  collection,
-  query,
-  orderBy,
-  DocumentData,
-  QueryDocumentSnapshot,
-} from "firebase/firestore";
-
 const CONSTANTS = {
-  ASSISTANT_NAME: "Chad",
   DEFAULT_CHAT_TEXT: "New Chat",
 };
 
 interface ChatEntryProps {
   chatId: string;
+  title?: string | null;
 }
 
 function validateChatId(chatId: string): boolean {
@@ -47,32 +38,6 @@ function validateSession(session: Session | null): {
   };
 }
 
-function findLastAssistantMessage(
-  messageDocs: QueryDocumentSnapshot<DocumentData>[] | undefined,
-): string | null {
-  if (!messageDocs || messageDocs.length === 0) return null;
-
-  try {
-    const lastChadMessage = messageDocs
-      .slice()
-      .reverse()
-      .find((doc) => {
-        const data = doc.data();
-        return data?.user?.name === CONSTANTS.ASSISTANT_NAME;
-      });
-
-    return lastChadMessage?.data()?.text || null;
-  } catch (error) {
-    console.error("Error finding last assistant message:", {
-      error: error instanceof Error ? error.message : "Unknown error",
-      messagesCount: messageDocs.length,
-      timestamp: new Date().toISOString(),
-    });
-
-    return null;
-  }
-}
-
 async function handleChatDeletion(
   chatId: string,
   isCurrentChat: boolean,
@@ -89,9 +54,10 @@ async function handleChatDeletion(
   }
 }
 
-const ChatEntry = ({ chatId }: ChatEntryProps) => {
+const ChatEntry = ({ chatId, title }: ChatEntryProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { streamingTitle } = useChatTitle();
 
   const { data: session }: SessionContextValue = useSession();
 
@@ -100,7 +66,7 @@ const ChatEntry = ({ chatId }: ChatEntryProps) => {
 
   const isValidChatId = useMemo(() => validateChatId(chatId), [chatId]);
 
-  const { isValid: isValidSession, userEmail } = useMemo(
+  const { isValid: isValidSession } = useMemo(
     () => validateSession(session),
     [session],
   );
@@ -109,21 +75,13 @@ const ChatEntry = ({ chatId }: ChatEntryProps) => {
     return Boolean(pathname?.includes(chatId));
   }, [pathname, chatId]);
 
-  const [messagesSnapshot, isLoadingMessages, messagesError] = useCollection(
-    isValidSession && isValidChatId && userEmail
-      ? query(
-          collection(db, "users", userEmail, "chats", chatId, "messages"),
-          orderBy("createdAt", "asc"),
-        )
-      : null,
-  );
-
   const displayText = useMemo(() => {
-    if (isLoadingMessages || !messagesSnapshot) return null;
+    if (streamingTitle?.chatId === chatId && streamingTitle.text) {
+      return streamingTitle.text;
+    }
 
-    const lastMessage = findLastAssistantMessage(messagesSnapshot.docs);
-    return lastMessage || CONSTANTS.DEFAULT_CHAT_TEXT;
-  }, [isLoadingMessages, messagesSnapshot]);
+    return title || CONSTANTS.DEFAULT_CHAT_TEXT;
+  }, [chatId, streamingTitle, title]);
 
   const deleteChat = useCallback(
     async (e: React.MouseEvent<SVGSVGElement>) => {
@@ -144,7 +102,10 @@ const ChatEntry = ({ chatId }: ChatEntryProps) => {
         chatId,
         isActive,
         router,
-      ).finally(() => setIsDeleting(false));
+      ).catch((error) => {
+        setIsDeleting(false);
+        throw error;
+      });
 
       toast.promise(deleteChatPromise, {
         loading: "Deleting chat...",
@@ -170,15 +131,6 @@ const ChatEntry = ({ chatId }: ChatEntryProps) => {
     return null;
   }
 
-  if (messagesError) {
-    console.error("ChatEntry Firebase error:", {
-      error: messagesError.message,
-      chatId,
-      userEmail,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   return (
     <Link
       href={`/chat/${chatId}`}
@@ -198,16 +150,7 @@ const ChatEntry = ({ chatId }: ChatEntryProps) => {
       />
 
       <p className="relative w-0 flex-1 truncate text-gray-300">
-        {isLoadingMessages || !messagesSnapshot ? (
-          <span
-            className="flex h-[20px] w-full items-center justify-center"
-            aria-label="Loading chat preview"
-          >
-            <span className="dot-elastic" aria-hidden="true" />
-          </span>
-        ) : (
-          <span aria-label="Chat preview">{displayText}</span>
-        )}
+        <span aria-label="Chat title">{displayText}</span>
 
         <span
           className={`absolute inset-y-0 right-0 z-10 h-7 w-9 ${
@@ -221,13 +164,17 @@ const ChatEntry = ({ chatId }: ChatEntryProps) => {
         ref={trashIconRef}
         onClick={deleteChat}
         onKeyDown={handleKeyDown}
-        className={`h-1 w-1 shrink-0 group-hover:h-4 group-hover:w-4 ${
-          (isActive || isMobile) && "h-4 w-4"
-        } opacity-0 group-hover:opacity-100 ${
-          (isActive || isMobile) && "opacity-100"
-        } rounded-sm text-gray-500 transition duration-300 hover:text-red-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-gray-100`}
+        className={`shrink-0 rounded-sm text-gray-500 transition duration-300 focus:outline-none focus-visible:outline-2 focus-visible:outline-gray-100 ${
+          isDeleting
+            ? "h-4 w-4 cursor-default opacity-50"
+            : `h-1 w-1 group-hover:h-4 group-hover:w-4 ${
+                (isActive || isMobile) && "h-4 w-4"
+              } opacity-0 group-hover:opacity-100 ${
+                (isActive || isMobile) && "opacity-100"
+              } hover:text-red-500`
+        }`}
         role="button"
-        tabIndex={0}
+        tabIndex={isDeleting ? -1 : 0}
         aria-label={`Delete chat: ${
           displayText || CONSTANTS.DEFAULT_CHAT_TEXT
         }`}
