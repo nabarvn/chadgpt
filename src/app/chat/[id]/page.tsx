@@ -72,15 +72,21 @@ function transformMessageData(
 /*
   Verifies chat ownership and existence
 */
-async function verifyChatAccess(
+async function getChatAccess(
   chatId: string,
   userEmail: string,
-): Promise<boolean> {
+): Promise<{ exists: boolean; title: string | null }> {
   try {
     const chatDocRef = doc(db, "users", userEmail, "chats", chatId);
     const chatDoc = await getDoc(chatDocRef);
 
-    return chatDoc.exists();
+    return {
+      exists: chatDoc.exists(),
+      title:
+        chatDoc.exists() && typeof chatDoc.data()?.title === "string"
+          ? chatDoc.data()!.title
+          : null,
+    };
   } catch (error) {
     console.error("Error verifying chat access:", {
       error: error instanceof Error ? error.message : "Unknown error",
@@ -89,7 +95,7 @@ async function verifyChatAccess(
       timestamp: new Date().toISOString(),
     });
 
-    return false;
+    return { exists: false, title: null };
   }
 }
 
@@ -137,9 +143,9 @@ const ChatPage = async ({ params: { id }, searchParams }: ChatPageProps) => {
     const chatId = validateChatId(id);
     const userEmail = session.user.email;
 
-    const hasAccess = await verifyChatAccess(chatId, userEmail);
+    const chat = await getChatAccess(chatId, userEmail);
 
-    if (!hasAccess) {
+    if (!chat.exists) {
       redirect("/");
     }
 
@@ -149,6 +155,7 @@ const ChatPage = async ({ params: { id }, searchParams }: ChatPageProps) => {
       <ChatView
         chatId={chatId}
         session={session}
+        initialTitle={chat.title}
         initialMessages={initialMessages}
         initialPrompt={searchParams.prompt}
       />
