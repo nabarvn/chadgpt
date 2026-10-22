@@ -14,13 +14,10 @@ import {
 
 interface LobbyState {
   isLoadingChats: boolean;
-  hasNewChatAvailable: boolean;
+  emptyChatId: string | null;
 }
 
-/*
-  Checks if the user has an existing empty chat that can be reused
-*/
-async function checkForEmptyChat(userEmail: string): Promise<boolean> {
+async function findEmptyChatId(userEmail: string): Promise<string | null> {
   try {
     const chatsCollection: CollectionReference<DocumentData> = collection(
       db,
@@ -37,9 +34,8 @@ async function checkForEmptyChat(userEmail: string): Promise<boolean> {
 
     const latestChatSnapshot = await getDocs(latestChatQuery);
 
-    // no chats exist
     if (latestChatSnapshot.empty) {
-      return false;
+      return null;
     }
 
     const lastChatDoc = latestChatSnapshot.docs[0];
@@ -50,9 +46,7 @@ async function checkForEmptyChat(userEmail: string): Promise<boolean> {
     );
 
     const messagesSnapshot = await getDocs(messagesQuery);
-
-    // return true if an empty chat exists
-    return messagesSnapshot.empty;
+    return messagesSnapshot.empty ? lastChatDoc.id : null;
   } catch (error) {
     console.error("Error checking for empty chat:", {
       error: error instanceof Error ? error.message : "Unknown error",
@@ -60,7 +54,7 @@ async function checkForEmptyChat(userEmail: string): Promise<boolean> {
       timestamp: new Date().toISOString(),
     });
 
-    return false;
+    return null;
   }
 }
 
@@ -74,15 +68,13 @@ async function determineLobbyState(): Promise<LobbyState> {
     if (!session?.user?.email) {
       return {
         isLoadingChats: false,
-        hasNewChatAvailable: true,
+        emptyChatId: null,
       };
     }
 
-    const hasEmptyChat = await checkForEmptyChat(session.user.email);
-
     return {
       isLoadingChats: false,
-      hasNewChatAvailable: !hasEmptyChat,
+      emptyChatId: await findEmptyChatId(session.user.email),
     };
   } catch (error) {
     console.error("Error determining lobby state:", {
@@ -92,7 +84,7 @@ async function determineLobbyState(): Promise<LobbyState> {
 
     return {
       isLoadingChats: false,
-      hasNewChatAvailable: true,
+      emptyChatId: null,
     };
   }
 }
@@ -100,11 +92,8 @@ async function determineLobbyState(): Promise<LobbyState> {
 export const dynamic = "force-dynamic";
 
 const HomePage = async () => {
-  const { isLoadingChats, hasNewChatAvailable } = await determineLobbyState();
-
-  return (
-    <Lobby isLoadingChats={isLoadingChats} hasEmptyChat={hasNewChatAvailable} />
-  );
+  const { isLoadingChats, emptyChatId } = await determineLobbyState();
+  return <Lobby isLoadingChats={isLoadingChats} emptyChatId={emptyChatId} />;
 };
 
 export default HomePage;
