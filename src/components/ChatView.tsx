@@ -1,19 +1,8 @@
 "use client";
 
-import { db } from "@/firebase/client";
 import { useRouter } from "next/navigation";
 import { ArrowDownCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useTransition, useCallback, useMemo } from "react";
-
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  deleteDoc,
-  DocumentReference,
-  DocumentData,
-  Timestamp,
-} from "firebase/firestore";
 
 import ScrollableFeed from "react-scrollable-feed";
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
@@ -31,17 +20,18 @@ import { createChat } from "@/lib/chat";
 import { validateSession } from "@/lib/utils";
 import { isMobile } from "react-device-detect";
 import { getPromptResponseStream } from "@/lib/prompt";
+import { getTitleStream, saveTitle } from "@/lib/title";
 import { Message, ChatInput, ChatHeader } from "@/components";
 
 import {
   useChatState,
+  useChatTitle,
   useChatRefs,
   useScrollManagement,
   useFirebaseMessages,
 } from "@/hooks";
 
 const CONSTANTS = {
-  MODEL: "gpt-4.1-nano",
   MAX_CONTEXT_MESSAGES: 10,
   MOUNT_DELAY: 1000,
   CHAT_AVATAR: "/chad.png",
@@ -54,6 +44,7 @@ interface ChatViewProps {
   session: Session | null;
   initialMessages: SerializedMessage[];
   initialPrompt?: string;
+  initialTitle?: string | null;
 }
 
 interface ScrollToBottomProps {
@@ -99,8 +90,10 @@ const ChatView = ({
   session,
   initialMessages,
   initialPrompt,
+  initialTitle,
 }: ChatViewProps) => {
   const router = useRouter();
+  const { streamingTitle, updateStreamingTitle } = useChatTitle();
 
   const [state, updateState]: [
     ChatState,
@@ -110,14 +103,48 @@ const ChatView = ({
   });
 
   const [isPending, startTransition] = useTransition();
-
   const { scrollableRef, scrollRef, textareaRef } = useChatRefs();
 
-  const wasSendingMessage = useRef(false);
+  const titleRequestedRef = useRef(false);
+  const wasSendingMessageRef = useRef(false);
+  const initialPromptHandledRef = useRef(false);
+
+  const activeTurnControllerRef = useRef<AbortController | null>(null);
+
+  const requestTitle = useCallback(
+    async (
+      sourceMessage?: string,
+      signal?: AbortSignal,
+    ): Promise<string | null> => {
+      try {
+        return await getTitleStream(
+          chatId,
+          (text) => {
+            updateStreamingTitle(chatId, text);
+          },
+          sourceMessage,
+          signal,
+        );
+      } catch (error) {
+        updateStreamingTitle(chatId, "");
+
+        if (!(error instanceof Error && error.name === "AbortError")) {
+          console.error("Failed to generate chat title:", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            chatId,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        return null;
+      }
+    },
+    [chatId, updateStreamingTitle],
+  );
 
   useEffect(() => {
     if (
-      wasSendingMessage.current &&
+      wasSendingMessageRef.current &&
       !state.isSendingMessage &&
       textareaRef.current &&
       !isMobile
@@ -125,8 +152,18 @@ const ChatView = ({
       textareaRef.current.focus();
     }
 
-    wasSendingMessage.current = state.isSendingMessage;
+    wasSendingMessageRef.current = state.isSendingMessage;
   }, [state.isSendingMessage, textareaRef]);
+
+  useEffect(() => {
+    const abortActiveTurn = () => activeTurnControllerRef.current?.abort();
+    window.addEventListener("pagehide", abortActiveTurn);
+
+    return () => {
+      window.removeEventListener("pagehide", abortActiveTurn);
+      abortActiveTurn();
+    };
+  }, []);
 
   const { displayMessages, isLoadingMessages, messagesError } =
     useFirebaseMessages(session, chatId, initialMessages);
@@ -154,11 +191,11 @@ const ChatView = ({
     () => [
       ...displayMessages,
       ...(state.optimisticMessage &&
-      !displayMessages.some((msg) => msg.text === state.optimisticMessage?.text)
+      !displayMessages.some((msg) => msg.id === state.optimisticMessage?.id)
         ? [state.optimisticMessage]
         : []),
       ...(state.streamingMessage &&
-      !displayMessages.some((msg) => msg.text === state.streamingMessage?.text)
+      !displayMessages.some((msg) => msg.id === state.streamingMessage?.id)
         ? [state.streamingMessage]
         : []),
     ],
@@ -173,14 +210,14 @@ const ChatView = ({
 
     if (
       state.streamingMessage &&
-      displayMessages.some((msg) => msg.text === state.streamingMessage?.text)
+      displayMessages.some((msg) => msg.id === state.streamingMessage?.id)
     ) {
       updates.streamingMessage = null;
     }
 
     if (
       state.optimisticMessage &&
-      displayMessages.some((msg) => msg.text === state.optimisticMessage?.text)
+      displayMessages.some((msg) => msg.id === state.optimisticMessage?.id)
     ) {
       updates.optimisticMessage = null;
     }
@@ -208,27 +245,38 @@ const ChatView = ({
     async (input: string) => {
       if (!input.trim() || !session?.user?.email) return;
 
-      updateState({ isSendingMessage: true });
+      const text = input.trim();
+      const turnId = crypto.randomUUID();
+      const user = validateSession(session);
 
-      let userMessageRef: DocumentReference<DocumentData> | null = null;
+      const turnController = new AbortController();
 
-      try {
-        const user = validateSession(session);
+      const isFirstMessage =
+        initialMessages.length === 0 && displayMessages.length === 0;
 
-        const message: Omit<MessageType, "id"> = {
-          text: input.trim(),
-          createdAt: serverTimestamp() as Timestamp,
+      activeTurnControllerRef.current = turnController;
+
+      updateState({
+        isSendingMessage: true,
+        optimisticMessage: {
+          id: `${turnId}-user`,
+          text,
+          createdAt: new Date().toISOString(),
           user: {
             _id: user.email,
             name: user.name,
             avatar: user.avatar,
           },
-        };
+        },
+      });
 
-        userMessageRef = await addDoc(
-          collection(db, "users", user.email, "chats", chatId, "messages"),
-          message,
-        );
+      let titlePromise: Promise<string | null> | null = null;
+
+      try {
+        if (isFirstMessage && !initialTitle && !titleRequestedRef.current) {
+          titleRequestedRef.current = true;
+          titlePromise = requestTitle(text, turnController.signal);
+        }
 
         const chatContext: GPTMessage[] = displayMessages
           .slice(-CONSTANTS.MAX_CONTEXT_MESSAGES)
@@ -240,7 +288,7 @@ const ChatView = ({
 
         const outboundMessages: GPTMessage[] = [
           ...chatContext,
-          { role: "user", content: input.trim() },
+          { role: "user", content: text },
         ];
 
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -248,9 +296,9 @@ const ChatView = ({
         const stream = await getPromptResponseStream(
           outboundMessages,
           chatId,
-          CONSTANTS.MODEL,
-          session,
+          turnId,
           timezone,
+          turnController.signal,
         );
 
         // handle streaming response
@@ -260,7 +308,7 @@ const ChatView = ({
 
         (updateState as (updates: Partial<ChatState>) => void)({
           streamingMessage: {
-            id: "ai-response",
+            id: `${turnId}-assistant`,
             text: "",
             createdAt: new Date().toISOString(),
             user: {
@@ -278,12 +326,12 @@ const ChatView = ({
           done = doneReading;
 
           if (value) {
-            const chunkValue = decoder.decode(value);
+            const chunkValue = decoder.decode(value, { stream: true });
             accumulatedResponse += chunkValue;
 
             updateState({
               streamingMessage: {
-                id: "ai-response",
+                id: `${turnId}-assistant`,
                 text: accumulatedResponse,
                 createdAt: new Date().toISOString(),
                 user: {
@@ -295,18 +343,39 @@ const ChatView = ({
             });
           }
         }
-      } catch (error) {
-        if (userMessageRef) {
-          try {
-            await deleteDoc(userMessageRef);
-          } catch (deleteError) {
-            console.error("Error deleting user message:", deleteError);
+
+        decoder.decode();
+
+        if (titlePromise) {
+          const title = await titlePromise;
+
+          if (title) {
+            try {
+              await saveTitle(chatId, title, turnController.signal);
+            } catch (error) {
+              if (!(error instanceof Error && error.name === "AbortError")) {
+                console.error("Failed to save chat title:", {
+                  error:
+                    error instanceof Error ? error.message : "Unknown error",
+                  chatId,
+                  timestamp: new Date().toISOString(),
+                });
+              }
+            }
           }
         }
+      } catch (error) {
+        const wasAborted =
+          turnController.signal.aborted ||
+          (error instanceof Error && error.name === "AbortError");
+
+        turnController.abort();
+        titleRequestedRef.current = false;
+        updateStreamingTitle(chatId, "");
 
         let errorMessage = "An unexpected error occurred. Please try again.";
 
-        if (error instanceof Error) {
+        if (!wasAborted && error instanceof Error) {
           errorMessage = error.message;
 
           console.error("Error in sendMessage:", {
@@ -317,34 +386,62 @@ const ChatView = ({
           });
         }
 
-        toast.error(errorMessage);
-        updateState({ streamingMessage: null });
+        if (!wasAborted) {
+          toast.error(errorMessage);
+        }
+
+        updateState({ optimisticMessage: null, streamingMessage: null });
       } finally {
+        if (activeTurnControllerRef.current === turnController) {
+          activeTurnControllerRef.current = null;
+        }
+
         updateState({ isSendingMessage: false });
       }
     },
-    [session, chatId, displayMessages, updateState],
+    [
+      session,
+      chatId,
+      displayMessages,
+      initialMessages.length,
+      initialTitle,
+      requestTitle,
+      updateStreamingTitle,
+      updateState,
+    ],
   );
+
+  useEffect(() => {
+    const hasUserMessage = displayMessages.some(
+      (message) => message.user._id !== CONSTANTS.ASSISTANT_ID,
+    );
+
+    if (hasUserMessage && !initialTitle && !titleRequestedRef.current) {
+      titleRequestedRef.current = true;
+      void requestTitle();
+    }
+  }, [displayMessages, initialTitle, requestTitle]);
 
   useEffect(() => {
     if (
       initialPrompt &&
-      !state.initialPromptSent &&
-      session?.user?.email &&
-      displayMessages.length === 0 &&
+      !initialPromptHandledRef.current &&
       state.isInitialized
     ) {
-      updateState({ initialPromptSent: true });
-      sendMessage(initialPrompt);
+      initialPromptHandledRef.current = true;
+      window.history.replaceState(window.history.state, "", `/chat/${chatId}`);
+
+      if (session?.user?.email && initialMessages.length === 0) {
+        void sendMessage(initialPrompt);
+      }
     }
   }, [
+    chatId,
     initialPrompt,
-    state.initialPromptSent,
     session,
-    displayMessages.length,
+    initialMessages.length,
     state.isInitialized,
     sendMessage,
-    updateState,
   ]);
 
   const handleCreateChat = useCallback(async () => {
@@ -367,7 +464,9 @@ const ChatView = ({
   return (
     <div className="flex flex-col overflow-hidden" style={{ height: "100svh" }}>
       <ChatHeader
-        displayMessages={displayMessages}
+        title={
+          streamingTitle?.chatId === chatId ? streamingTitle.text : initialTitle
+        }
         isInitialized={state.isInitialized}
         isCreating={state.isCreating}
         isPending={isPending}
@@ -389,9 +488,9 @@ const ChatView = ({
           aria-live="polite"
           aria-label="Chat messages"
         >
-          {displayMessages.length === 0 &&
-            !isLoadingMessages &&
-            !initialPrompt && <EmptyState />}
+          {allMessages.length === 0 && !isLoadingMessages && !initialPrompt && (
+            <EmptyState />
+          )}
 
           {isLoadingMessages && (
             <div
