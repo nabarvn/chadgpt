@@ -6,7 +6,7 @@ const ExternalLink = memo(() => (
   <Link
     target="_blank"
     title="Lumen"
-    rel="noopener noreferrer"
+    rel="noopener"
     href="https://lumen.nabarun.app"
     className="flex w-full items-center gap-2 rounded-lg bg-[#434654] px-3 py-3 text-sm text-gray-300 transition-all duration-200 hover:ring-1 hover:ring-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
     aria-label="Open Lumen - Beyond traditional web search (opens in new tab)"
