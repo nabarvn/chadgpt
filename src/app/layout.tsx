@@ -10,7 +10,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getAuthSession();
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="overscroll-y-none" suppressHydrationWarning>
       <body>
         <Providers>
           {session ? (
