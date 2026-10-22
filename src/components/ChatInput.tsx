@@ -290,7 +290,7 @@ const ChatInput = ({
         <a
           href="https://git.new/chad"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener"
           className="flex items-center text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
         >
           <StarIcon className="mr-1 h-4 w-4" />
