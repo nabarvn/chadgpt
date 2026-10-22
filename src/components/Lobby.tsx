@@ -15,10 +15,10 @@ import {
 
 interface LobbyProps {
   isLoadingChats: boolean;
-  hasEmptyChat: boolean;
+  emptyChatId: string | null;
 }
 
-const Lobby = ({ isLoadingChats, hasEmptyChat }: LobbyProps) => {
+const Lobby = ({ isLoadingChats, emptyChatId }: LobbyProps) => {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -53,15 +53,19 @@ const Lobby = ({ isLoadingChats, hasEmptyChat }: LobbyProps) => {
   const newChat = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      if (isDisabled) return;
 
-      if (hasEmptyChat) {
-        await handleCreateChat({
-          loadingText: "Creating a new chat...",
-          successText: "New chat created!",
+      if (emptyChatId) {
+        startTransition(() => {
+          router.push(`/chat/${emptyChatId}`);
         });
+
+        return;
       }
+
+      await handleCreateChat();
     },
-    [hasEmptyChat, handleCreateChat],
+    [emptyChatId, handleCreateChat, isDisabled, router, startTransition],
   );
 
   const handleExampleClick = useCallback(
