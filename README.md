@@ -5,7 +5,7 @@
 
   <br/>
 
-  <h1 align="center">ChadGPT</h1>
+  <h3 align="center">ChadGPT</h3>
 
   <p align="center">
     Your low-key AI agent for the new era!
@@ -27,7 +27,7 @@
 
 <br />
 
-ChadGPT is a full-stack GPT implementation built with Next.js 13, featuring a custom AI persona that delivers direct, confident responses. It streams answers in real-time from OpenAI's API, automatically syncs your chat history across devices with Firebase, and includes Google OAuth authentication. The interface supports full markdown rendering with syntax-highlighted code blocks, while Upstash Redis rate limiting prevents API abuse.
+ChadGPT is a full-stack GPT implementation built with Next.js, featuring a custom AI persona that delivers direct, confident responses. It streams answers in real-time from OpenAI's API, automatically syncs your chat history across devices with Firebase, and includes Google OAuth authentication. The interface supports full markdown rendering with syntax-highlighted code blocks, while Upstash Redis rate limiting prevents API abuse.
 
 ## Architecture
 
@@ -59,7 +59,7 @@ Follow these steps to set up and run ChadGPT on your local machine.
 
 This application requires:
 
-- [Node.js](https://nodejs.org/en) v20.14.0+
+- [Node.js](https://nodejs.org/en) v24+
 - A [Firebase](https://firebase.google.com) account (free tier is sufficient)
 - A [Google Cloud Console](https://console.cloud.google.com) account for OAuth credentials
 - An [OpenAI](https://platform.openai.com/api-keys) account for API keys
@@ -168,7 +168,6 @@ The application will be available at [http://localhost:3000](http://localhost:30
 ### AI & Streaming
 
 - **[OpenAI API](https://platform.openai.com/docs/introduction)** - GPT language models
-- **[Vercel AI SDK](https://sdk.vercel.ai/docs)** - Streaming AI responses
 
 ### Rate Limiting & Caching
 
